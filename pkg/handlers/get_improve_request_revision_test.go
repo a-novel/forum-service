@@ -1,0 +1,93 @@
+package handlers_test
+
+import (
+	"encoding/json"
+	"github.com/a-novel/forum-service/pkg/handlers"
+	"github.com/a-novel/forum-service/pkg/models"
+	servicesmocks "github.com/a-novel/forum-service/pkg/services/mocks"
+	"github.com/a-novel/go-framework/errors"
+	"github.com/a-novel/go-framework/test"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+	"time"
+)
+
+func TestGetImproveRequestRevisionHandler(t *testing.T) {
+	data := []struct {
+		name string
+
+		query string
+
+		shouldCallService       bool
+		shouldCallServiceWithID uuid.UUID
+		serviceResp             *models.ImproveRequestRevision
+		serviceErr              error
+
+		expect       interface{}
+		expectStatus int
+	}{
+		{
+			name:                    "Success",
+			query:                   "?id=01010101-0101-0101-0101-010101010101",
+			shouldCallService:       true,
+			shouldCallServiceWithID: test.NumberUUID(1),
+			serviceResp: &models.ImproveRequestRevision{
+				ID:        test.NumberUUID(1),
+				SourceID:  test.NumberUUID(10),
+				CreatedAt: baseTime,
+				UserID:    test.NumberUUID(100),
+				Title:     "title",
+				Content:   "content",
+			},
+			expect: map[string]interface{}{
+				"id":        test.NumberUUID(1).String(),
+				"createdAt": baseTime.Format(time.RFC3339),
+				"sourceID":  test.NumberUUID(10).String(),
+				"userID":    test.NumberUUID(100).String(),
+				"title":     "title",
+				"content":   "content",
+			},
+			expectStatus: http.StatusOK,
+		},
+		{
+			name:                    "Errors/NotFound",
+			query:                   "?id=01010101-0101-0101-0101-010101010101",
+			shouldCallService:       true,
+			shouldCallServiceWithID: test.NumberUUID(1),
+			serviceErr:              errors.ErrNotFound,
+			expectStatus:            http.StatusNotFound,
+		},
+	}
+
+	for _, d := range data {
+		t.Run(d.name, func(t *testing.T) {
+			service := servicesmocks.NewGetImproveRequestRevisionService(t)
+
+			w := httptest.NewRecorder()
+			c, _ := gin.CreateTestContext(w)
+			c.Request = httptest.NewRequest("POST", "/"+d.query, nil)
+
+			if d.shouldCallService {
+				service.
+					On("Get", c, d.shouldCallServiceWithID).
+					Return(d.serviceResp, d.serviceErr)
+			}
+
+			handler := handlers.NewGetImproveRequestRevisionHandler(service)
+			handler.Handle(c)
+
+			require.Equal(t, d.expectStatus, w.Code, c.Errors.String())
+			if d.expect != nil {
+				var body interface{}
+				require.NoError(t, json.Unmarshal(w.Body.Bytes(), &body))
+				require.Equal(t, d.expect, body)
+			}
+
+			service.AssertExpectations(t)
+		})
+	}
+}
