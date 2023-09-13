@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	goerrors "errors"
+	"github.com/a-novel/forum-service/pkg/adapters"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/google/uuid"
@@ -28,5 +29,5 @@ func (s *getImproveRequestRevisionServiceImpl) Get(ctx context.Context, id uuid.
 		return nil, goerrors.Join(ErrGetImproveRequestRevision, err)
 	}
 
-	return ParseImproveRequestRevision(data), nil
+	return adapters.ImproveRequestRevisionToModel(data), nil
 }

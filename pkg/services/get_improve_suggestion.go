@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	goerrors "errors"
+	"github.com/a-novel/forum-service/pkg/adapters"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/google/uuid"
@@ -28,5 +29,5 @@ func (s *getImproveSuggestionServiceImpl) Get(ctx context.Context, id uuid.UUID)
 		return nil, goerrors.Join(ErrGetImproveSuggestion, err)
 	}
 
-	return ParseImproveSuggestion(suggestion), nil
+	return adapters.ImproveSuggestionToModel(suggestion), nil
 }

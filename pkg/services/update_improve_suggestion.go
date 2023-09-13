@@ -4,6 +4,7 @@ import (
 	"context"
 	goerrors "errors"
 	auth "github.com/a-novel/auth-service/framework"
+	"github.com/a-novel/forum-service/pkg/adapters"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/go-framework/errors"
@@ -67,10 +68,10 @@ func (s *updateImproveSuggestionServiceImpl) Update(ctx context.Context, tokenRa
 		return nil, goerrors.Join(errors.ErrInvalidEntity, ErrSwitchSource)
 	}
 
-	suggestion, err = s.repository.Update(ctx, ParseImproveSuggestionForm(form), id, now)
+	suggestion, err = s.repository.Update(ctx, adapters.ImproveSuggestionFormToDAO(form), id, now)
 	if err != nil {
 		return nil, goerrors.Join(ErrUpdateImproveSuggestion, err)
 	}
 
-	return ParseImproveSuggestion(suggestion), nil
+	return adapters.ImproveSuggestionToModel(suggestion), nil
 }

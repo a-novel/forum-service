@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	goerrors "errors"
+	"github.com/a-novel/forum-service/pkg/adapters"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/go-framework/errors"
@@ -29,12 +30,12 @@ func (s *searchImproveRequestsServiceImpl) Search(ctx context.Context, query mod
 		return nil, 0, goerrors.Join(errors.ErrInvalidEntity, ErrInvalidSearchLimit, err)
 	}
 
-	res, total, err := s.repository.Search(ctx, ParseImproveRequestSearchQuery(query), query.Limit, query.Offset)
+	res, total, err := s.repository.Search(ctx, adapters.ImproveRequestSearchQueryToDAO(query), query.Limit, query.Offset)
 	if err != nil {
 		return nil, 0, goerrors.Join(ErrSearchImproveRequests, err)
 	}
 
 	return lo.Map(res, func(item *dao.ImproveRequestPreview, _ int) *models.ImproveRequestPreview {
-		return ParseImproveRequestPreview(item)
+		return adapters.ImproveRequestPreviewToModel(item)
 	}), total, nil
 }
