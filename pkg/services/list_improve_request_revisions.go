@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	goerrors "errors"
+	"github.com/a-novel/forum-service/pkg/adapters"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/google/uuid"
@@ -30,6 +31,6 @@ func (s *listImproveRequestRevisionServiceImpl) List(ctx context.Context, id uui
 	}
 
 	return lo.Map(data, func(item *dao.ImproveRequestRevisionPreview, _ int) *models.ImproveRequestRevisionPreview {
-		return ParseImproveRequestRevisionPreview(item)
+		return adapters.ImproveRequestRevisionPreviewToModel(item)
 	}), nil
 }

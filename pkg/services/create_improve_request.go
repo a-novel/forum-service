@@ -4,6 +4,7 @@ import (
 	"context"
 	goerrors "errors"
 	auth "github.com/a-novel/auth-service/framework"
+	"github.com/a-novel/forum-service/pkg/adapters"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/go-framework/errors"
@@ -62,5 +63,5 @@ func (s *createImproveRequestServiceImpl) Create(ctx context.Context, tokenRaw, 
 		return nil, goerrors.Join(ErrCreateImproveRequest, err)
 	}
 
-	return ParseImproveRequestPreview(res), nil
+	return adapters.ImproveRequestPreviewToModel(res), nil
 }
