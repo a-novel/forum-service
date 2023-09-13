@@ -35,7 +35,4 @@ db-test:
 run:
 	go run ./cmd/api/main.go
 
-rotate-keys:
-	curl -X POST http://localhost:2040/cloud/rotate-keys
-
 .PHONY: all test race msan db db-test
