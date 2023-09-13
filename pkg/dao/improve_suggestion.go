@@ -37,18 +37,18 @@ type ImproveSuggestionModel struct {
 	postgresql.Metadata
 
 	// SourceID is the ID of the first revision of the related improvement request. It cannot be changed.
-	SourceID uuid.UUID `json:"sourceID" bun:"source_id,type:uuid"`
+	SourceID uuid.UUID `bun:"source_id,type:uuid"`
 	// UserID is the ID of the user who created the suggestion.
-	UserID uuid.UUID `json:"userID" bun:"user_id,type:uuid"`
+	UserID uuid.UUID `bun:"user_id,type:uuid"`
 	// Validated is true if the suggestion has been validated by the improvement request creator.
-	Validated bool `json:"validated" bun:"validated"`
+	Validated bool `bun:"validated"`
 
 	// UpVotes is the number of up votes the suggestion has received. This value is indirectly updated from the
 	// votes table.
-	UpVotes int `json:"upVotes" bun:"up_votes"`
+	UpVotes int `bun:"up_votes"`
 	// DownVotes is the number of down votes the suggestion has received. This value is indirectly updated from the
 	// votes table.
-	DownVotes int `json:"downVotes" bun:"down_votes"`
+	DownVotes int `bun:"down_votes"`
 
 	ImproveSuggestionModelCore
 }
@@ -56,31 +56,31 @@ type ImproveSuggestionModel struct {
 type ImproveSuggestionModelCore struct {
 	// RequestID is the ID of the improvement request revision the suggestion is tied to. It must point to a revision
 	// of the improvement request with the Model.SourceID.
-	RequestID uuid.UUID `json:"requestID" bun:"request_id,type:uuid"`
+	RequestID uuid.UUID `bun:"request_id,type:uuid"`
 	// Title an improved version of the source Title. It should match it if no modifications are intended.
-	Title string `json:"title" bun:"title"`
+	Title string `bun:"title"`
 	// Content contains the updated content of the source request.
-	Content string `json:"content" bun:"content"`
+	Content string `bun:"content"`
 }
 
 type ImproveSuggestionSearchQueryOrder struct {
-	Score bool `json:"score"`
+	Score bool
 }
 
 type ImproveSuggestionSearchQuery struct {
 	// UserID is an optional parameter, to only target suggestions that were created by a specific author.
-	UserID *uuid.UUID `json:"userID"`
+	UserID *uuid.UUID
 	// SourceID is an optional parameter, to only target suggestions that were created for a specific improvement
 	// request.
-	SourceID *uuid.UUID `json:"sourceID"`
+	SourceID *uuid.UUID
 	// RequestID is an optional parameter, to only target suggestions that were created for a specific improvement
 	// request revision.
-	RequestID *uuid.UUID `json:"requestID"`
+	RequestID *uuid.UUID
 	// Validated is an optional parameter, to only target suggestions that have been validated by the improvement
 	// request creator.
-	Validated *bool `json:"validated"`
+	Validated *bool
 	// Order specifies custom ordering for the search results.
-	Order *ImproveSuggestionSearchQueryOrder `json:"order"`
+	Order *ImproveSuggestionSearchQueryOrder
 }
 
 type improveSuggestionRepositoryImpl struct {
