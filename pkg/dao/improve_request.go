@@ -29,10 +29,10 @@ type ImproveRequestModel struct {
 
 	// UpVotes is the number of up votes the request has received. This value is indirectly updated from the
 	// votes table.
-	UpVotes int `json:"upVotes" bun:"up_votes"`
+	UpVotes int `bun:"up_votes"`
 	// DownVotes is the number of down votes the request has received. This value is indirectly updated from the
 	// votes table.
-	DownVotes int `json:"downVotes" bun:"down_votes"`
+	DownVotes int `bun:"down_votes"`
 }
 
 type ImproveRequestRevisionModel struct {
@@ -41,22 +41,22 @@ type ImproveRequestRevisionModel struct {
 
 	// SourceID points to the first revision. It is equal to the ID if no other revision exist.
 	// An improvement request is never updated. Instead, new revisions are created every time.
-	SourceID uuid.UUID `json:"sourceID" bun:"source_id,type:uuid"`
+	SourceID uuid.UUID `bun:"source_id,type:uuid"`
 
 	// UserID is the ID of the user who created the request, or edited the revision.
-	UserID uuid.UUID `json:"userID" bun:"user_id,type:uuid"`
+	UserID uuid.UUID `bun:"user_id,type:uuid"`
 	// Title is a quick summary of the Content, and the goal it tries to achieve.
-	Title string `json:"title" bun:"title"`
+	Title string `bun:"title"`
 	// Content is a novel scene that the user wants to improve.
-	Content string `json:"content" bun:"content"`
+	Content string `bun:"content"`
 }
 
 type ImproveRequestRevisionPreview struct {
 	bun.BaseModel `bun:"table:improve_requests_revisions_list"`
 	postgresql.Metadata
 
-	SuggestionsCount         int `json:"suggestionsCount" bun:"suggestions_count"`
-	AcceptedSuggestionsCount int `json:"acceptedSuggestionsCount" bun:"accepted_suggestions_count"`
+	SuggestionsCount         int `bun:"suggestions_count"`
+	AcceptedSuggestionsCount int `bun:"accepted_suggestions_count"`
 }
 
 type ImproveRequestPreview struct {
@@ -64,40 +64,40 @@ type ImproveRequestPreview struct {
 	postgresql.Metadata
 
 	// UserID is the ID of the user who created the request, or edited the revision.
-	UserID uuid.UUID `json:"userID" bun:"user_id,type:uuid"`
+	UserID uuid.UUID `bun:"user_id,type:uuid"`
 	// Title is a quick summary of the Content, and the goal it tries to achieve.
-	Title string `json:"title" bun:"title"`
+	Title string `bun:"title"`
 	// Content is a novel scene that the user wants to improve.
-	Content string `json:"content" bun:"content"`
+	Content string `bun:"content"`
 
 	// UpVotes is the number of up votes the request and all its revisions has received. This value is indirectly
 	// updated from the votes table.
-	UpVotes int `json:"upVotes" bun:"up_votes"`
+	UpVotes int `bun:"up_votes"`
 	// DownVotes is the number of down votes the request and all its revisions has received. This value is indirectly
 	// updated from the votes table.
-	DownVotes int `json:"downVotes" bun:"down_votes"`
+	DownVotes int `bun:"down_votes"`
 
 	// RevisionCount is the number of revisions the request has.
-	RevisionCount int `json:"revisionsCount" bun:"revisions_count"`
+	RevisionCount int `bun:"revisions_count"`
 	// SuggestionsCount returns the total number of suggestions, associated with the request and all its revisions.
-	SuggestionsCount int `json:"suggestionsCount" bun:"suggestions_count"`
+	SuggestionsCount int `bun:"suggestions_count"`
 	// AcceptedSuggestionsCount returns the total number of accepted suggestions, associated with the request and all
 	// its revisions.
-	AcceptedSuggestionsCount int `json:"acceptedSuggestionsCount" bun:"accepted_suggestions_count"`
+	AcceptedSuggestionsCount int `bun:"accepted_suggestions_count"`
 }
 
 type ImproveRequestSearchQueryOrder struct {
-	Score bool `json:"score"`
+	Score bool
 }
 
 // ImproveRequestSearchQuery allows to filter improve requests.
 type ImproveRequestSearchQuery struct {
 	// UserID is an optional parameter, to only target requests that were created/revised by a specific author.
-	UserID *uuid.UUID `json:"userID"`
+	UserID *uuid.UUID
 	// Query is an optional parameter, to filter requests based on their title or content.
-	Query string `json:"query"`
+	Query string
 	// Order specifies custom ordering for the search results.
-	Order *ImproveRequestSearchQueryOrder `json:"order"`
+	Order *ImproveRequestSearchQueryOrder
 }
 
 type improveRequestRepositoryImpl struct {
