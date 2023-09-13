@@ -35,4 +35,7 @@ db-test:
 run:
 	go run ./cmd/api/main.go
 
+run-internal:
+	go run ./cmd/api-internal/main.go
+
 .PHONY: all test race msan db db-test
