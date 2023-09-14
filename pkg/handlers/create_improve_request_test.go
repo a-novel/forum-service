@@ -7,8 +7,7 @@ import (
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
 	servicesmocks "github.com/a-novel/forum-service/pkg/services/mocks"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
@@ -43,23 +42,23 @@ func TestCreateImproveRequestHandler(t *testing.T) {
 			body: map[string]interface{}{
 				"title":    "title",
 				"content":  "content",
-				"sourceID": test.NumberUUID(10).String(),
+				"sourceID": goframework.NumberUUID(10).String(),
 			},
 			shouldCallService:            true,
 			shouldCallServiceWithTitle:   "title",
 			shouldCallServiceWithContent: "content",
-			shouldCallServiceWithSource:  test.NumberUUID(10),
+			shouldCallServiceWithSource:  goframework.NumberUUID(10),
 			serviceResp: &models.ImproveRequestPreview{
-				ID:        test.NumberUUID(10),
+				ID:        goframework.NumberUUID(10),
 				CreatedAt: baseTime,
-				UserID:    test.NumberUUID(100),
+				UserID:    goframework.NumberUUID(100),
 				Title:     "title",
 				Content:   "content",
 			},
 			expect: map[string]interface{}{
-				"id":                       test.NumberUUID(10).String(),
+				"id":                       goframework.NumberUUID(10).String(),
 				"createdAt":                baseTime.Format(time.RFC3339),
-				"userID":                   test.NumberUUID(100).String(),
+				"userID":                   goframework.NumberUUID(100).String(),
 				"title":                    "title",
 				"content":                  "content",
 				"upVotes":                  float64(0),
@@ -76,12 +75,12 @@ func TestCreateImproveRequestHandler(t *testing.T) {
 			body: map[string]interface{}{
 				"title":    "title",
 				"content":  "content",
-				"sourceID": test.NumberUUID(10).String(),
+				"sourceID": goframework.NumberUUID(10).String(),
 			},
 			shouldCallService:            true,
 			shouldCallServiceWithTitle:   "title",
 			shouldCallServiceWithContent: "content",
-			shouldCallServiceWithSource:  test.NumberUUID(10),
+			shouldCallServiceWithSource:  goframework.NumberUUID(10),
 			serviceErr:                   services.ErrNotTheCreator,
 			expectStatus:                 http.StatusUnauthorized,
 		},
@@ -91,13 +90,13 @@ func TestCreateImproveRequestHandler(t *testing.T) {
 			body: map[string]interface{}{
 				"title":    "title",
 				"content":  "content",
-				"sourceID": test.NumberUUID(10).String(),
+				"sourceID": goframework.NumberUUID(10).String(),
 			},
 			shouldCallService:            true,
 			shouldCallServiceWithTitle:   "title",
 			shouldCallServiceWithContent: "content",
-			shouldCallServiceWithSource:  test.NumberUUID(10),
-			serviceErr:                   errors.ErrInvalidCredentials,
+			shouldCallServiceWithSource:  goframework.NumberUUID(10),
+			serviceErr:                   goframework.ErrInvalidCredentials,
 			expectStatus:                 http.StatusForbidden,
 		},
 		{
@@ -106,13 +105,13 @@ func TestCreateImproveRequestHandler(t *testing.T) {
 			body: map[string]interface{}{
 				"title":    "title",
 				"content":  "content",
-				"sourceID": test.NumberUUID(10).String(),
+				"sourceID": goframework.NumberUUID(10).String(),
 			},
 			shouldCallService:            true,
 			shouldCallServiceWithTitle:   "title",
 			shouldCallServiceWithContent: "content",
-			shouldCallServiceWithSource:  test.NumberUUID(10),
-			serviceErr:                   errors.ErrInvalidEntity,
+			shouldCallServiceWithSource:  goframework.NumberUUID(10),
+			serviceErr:                   goframework.ErrInvalidEntity,
 			expectStatus:                 http.StatusUnprocessableEntity,
 		},
 		{

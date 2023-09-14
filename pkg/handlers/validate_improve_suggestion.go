@@ -3,7 +3,8 @@ package handlers
 import (
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/errors"
+	"github.com/a-novel/go-apis"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -32,10 +33,10 @@ func (h *validateImproveSuggestionHandlerImpl) Handle(c *gin.Context) {
 	}
 
 	if err := h.service.Validate(c, token, form.Validated, form.ID); err != nil {
-		errors.ErrorToHTTPCode(c, err, []errors.HTTPError{
+		apis.ErrorToHTTPCode(c, err, []apis.HTTPError{
 			{services.ErrNotTheCreator, http.StatusUnauthorized},
-			{errors.ErrInvalidCredentials, http.StatusForbidden},
-		})
+			{goframework.ErrInvalidCredentials, http.StatusForbidden},
+		}, false)
 		return
 	}
 

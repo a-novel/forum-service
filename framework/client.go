@@ -3,7 +3,7 @@ package framework
 import (
 	"context"
 	"github.com/a-novel/forum-service/pkg/models"
-	"github.com/a-novel/go-framework/client"
+	"github.com/a-novel/go-apis"
 	"net/http"
 	"net/url"
 )
@@ -26,22 +26,20 @@ func NewClient(url *url.URL) Client {
 }
 
 func (a *clientImpl) VoteImproveRequest(ctx context.Context, form models.UpdateImproveRequestVotesForm) error {
-	return client.MakeHTTPCall(ctx, client.HTTPCallConfig{
+	return apis.CallHTTP(ctx, apis.CallHTTPConfig{
 		Path:            a.url.JoinPath("/improve-request/vote"),
 		Method:          http.MethodPost,
 		Body:            form,
 		SuccessStatuses: []int{http.StatusNoContent},
-		Client:          http.DefaultClient,
 	}, nil)
 }
 
 func (a *clientImpl) VoteImproveSuggestion(ctx context.Context, form models.UpdateImproveSuggestionVotesForm) error {
-	return client.MakeHTTPCall(ctx, client.HTTPCallConfig{
+	return apis.CallHTTP(ctx, apis.CallHTTPConfig{
 		Path:            a.url.JoinPath("/improve-suggestion/vote"),
 		Method:          http.MethodPost,
 		Body:            form,
 		SuccessStatuses: []int{http.StatusNoContent},
-		Client:          http.DefaultClient,
 	}, nil)
 }
 
@@ -54,11 +52,10 @@ func (a *clientImpl) GetImproveRequest(ctx context.Context, query models.GetImpr
 
 	output := new(models.ImproveRequestPreview)
 
-	return output, client.MakeHTTPCall(ctx, client.HTTPCallConfig{
+	return output, apis.CallHTTP(ctx, apis.CallHTTPConfig{
 		Path:            path,
 		Method:          http.MethodGet,
 		SuccessStatuses: []int{http.StatusOK},
-		Client:          http.DefaultClient,
 	}, output)
 }
 
@@ -71,19 +68,17 @@ func (a *clientImpl) GetImproveSuggestion(ctx context.Context, query models.GetI
 
 	output := new(models.ImproveSuggestion)
 
-	return output, client.MakeHTTPCall(ctx, client.HTTPCallConfig{
+	return output, apis.CallHTTP(ctx, apis.CallHTTPConfig{
 		Path:            path,
 		Method:          http.MethodGet,
 		SuccessStatuses: []int{http.StatusOK},
-		Client:          http.DefaultClient,
 	}, output)
 }
 
 func (a *clientImpl) Ping() error {
-	return client.MakeHTTPCall(context.Background(), client.HTTPCallConfig{
+	return apis.CallHTTP(context.Background(), apis.CallHTTPConfig{
 		Path:            a.url.JoinPath("/ping"),
 		Method:          http.MethodGet,
 		SuccessStatuses: []int{http.StatusOK},
-		Client:          http.DefaultClient,
 	}, nil)
 }

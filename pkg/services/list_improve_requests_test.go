@@ -2,12 +2,12 @@ package services_test
 
 import (
 	"context"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/postgresql"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -27,11 +27,11 @@ func TestListImproveRequestsService(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			ids:  []uuid.UUID{test.NumberUUID(1), test.NumberUUID(2)},
+			ids:  []uuid.UUID{goframework.NumberUUID(1), goframework.NumberUUID(2)},
 			daoResp: []*dao.ImproveRequestPreview{
 				{
-					Metadata:                 postgresql.NewMetadata(test.NumberUUID(10), baseTime, nil),
-					UserID:                   test.NumberUUID(100),
+					Metadata:                 bunovel.NewMetadata(goframework.NumberUUID(10), baseTime, nil),
+					UserID:                   goframework.NumberUUID(100),
 					Title:                    "title",
 					Content:                  "content",
 					UpVotes:                  10,
@@ -41,8 +41,8 @@ func TestListImproveRequestsService(t *testing.T) {
 					RevisionCount:            3,
 				},
 				{
-					Metadata:                 postgresql.NewMetadata(test.NumberUUID(20), baseTime, nil),
-					UserID:                   test.NumberUUID(200),
+					Metadata:                 bunovel.NewMetadata(goframework.NumberUUID(20), baseTime, nil),
+					UserID:                   goframework.NumberUUID(200),
 					Title:                    "title",
 					Content:                  "content",
 					UpVotes:                  32,
@@ -54,9 +54,9 @@ func TestListImproveRequestsService(t *testing.T) {
 			},
 			expected: []*models.ImproveRequestPreview{
 				{
-					ID:                       test.NumberUUID(10),
+					ID:                       goframework.NumberUUID(10),
 					CreatedAt:                baseTime,
-					UserID:                   test.NumberUUID(100),
+					UserID:                   goframework.NumberUUID(100),
 					Title:                    "title",
 					Content:                  "content",
 					UpVotes:                  10,
@@ -66,9 +66,9 @@ func TestListImproveRequestsService(t *testing.T) {
 					RevisionCount:            3,
 				},
 				{
-					ID:                       test.NumberUUID(20),
+					ID:                       goframework.NumberUUID(20),
 					CreatedAt:                baseTime,
-					UserID:                   test.NumberUUID(200),
+					UserID:                   goframework.NumberUUID(200),
 					Title:                    "title",
 					Content:                  "content",
 					UpVotes:                  32,
@@ -81,12 +81,12 @@ func TestListImproveRequestsService(t *testing.T) {
 		},
 		{
 			name:     "Success/NoResults",
-			ids:      []uuid.UUID{test.NumberUUID(1), test.NumberUUID(2)},
+			ids:      []uuid.UUID{goframework.NumberUUID(1), goframework.NumberUUID(2)},
 			expected: []*models.ImproveRequestPreview{},
 		},
 		{
 			name:        "Error/DAOFailure",
-			ids:         []uuid.UUID{test.NumberUUID(1), test.NumberUUID(2)},
+			ids:         []uuid.UUID{goframework.NumberUUID(1), goframework.NumberUUID(2)},
 			daoErr:      fooErr,
 			expectedErr: fooErr,
 		},

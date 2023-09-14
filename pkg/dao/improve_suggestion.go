@@ -2,8 +2,7 @@ package dao
 
 import (
 	"context"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/postgresql"
+	"github.com/a-novel/bunovel"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 	"strings"
@@ -34,7 +33,7 @@ type ImproveSuggestionRepository interface {
 
 type ImproveSuggestionModel struct {
 	bun.BaseModel `bun:"table:improve_suggestions"`
-	postgresql.Metadata
+	bunovel.Metadata
 
 	// SourceID is the ID of the first revision of the related improvement request. It cannot be changed.
 	SourceID uuid.UUID `bun:"source_id,type:uuid"`
@@ -94,9 +93,9 @@ func NewImproveSuggestionRepository(db bun.IDB) ImproveSuggestionRepository {
 }
 
 func (repository *improveSuggestionRepositoryImpl) Get(ctx context.Context, id uuid.UUID) (*ImproveSuggestionModel, error) {
-	suggestion := &ImproveSuggestionModel{Metadata: postgresql.Metadata{ID: id}}
+	suggestion := &ImproveSuggestionModel{Metadata: bunovel.Metadata{ID: id}}
 	if err := repository.db.NewSelect().Model(suggestion).WherePK().Scan(ctx); err != nil {
-		return nil, errors.HandlePGError(err)
+		return nil, bunovel.HandlePGError(err)
 	}
 
 	return suggestion, nil
@@ -104,7 +103,7 @@ func (repository *improveSuggestionRepositoryImpl) Get(ctx context.Context, id u
 
 func (repository *improveSuggestionRepositoryImpl) Create(ctx context.Context, data *ImproveSuggestionModelCore, userID, sourceID, id uuid.UUID, now time.Time) (*ImproveSuggestionModel, error) {
 	suggestion := &ImproveSuggestionModel{
-		Metadata: postgresql.Metadata{
+		Metadata: bunovel.Metadata{
 			ID:        id,
 			CreatedAt: now,
 		},
@@ -115,7 +114,7 @@ func (repository *improveSuggestionRepositoryImpl) Create(ctx context.Context, d
 
 	err := repository.db.NewInsert().Model(suggestion).Returning("*").Scan(ctx)
 	if err != nil {
-		return nil, errors.HandlePGError(err)
+		return nil, bunovel.HandlePGError(err)
 	}
 
 	return suggestion, nil
@@ -123,7 +122,7 @@ func (repository *improveSuggestionRepositoryImpl) Create(ctx context.Context, d
 
 func (repository *improveSuggestionRepositoryImpl) Update(ctx context.Context, data *ImproveSuggestionModelCore, id uuid.UUID, now time.Time) (*ImproveSuggestionModel, error) {
 	suggestion := &ImproveSuggestionModel{
-		Metadata: postgresql.Metadata{
+		Metadata: bunovel.Metadata{
 			ID:        id,
 			UpdatedAt: &now,
 		},
@@ -132,18 +131,18 @@ func (repository *improveSuggestionRepositoryImpl) Update(ctx context.Context, d
 
 	err := repository.db.NewUpdate().Model(suggestion).Column("updated_at", "request_id", "title", "content").WherePK().Returning("*").Scan(ctx)
 	if err != nil {
-		return nil, errors.HandlePGError(err)
+		return nil, bunovel.HandlePGError(err)
 	}
 
 	return suggestion, nil
 }
 
 func (repository *improveSuggestionRepositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
-	suggestion := &ImproveSuggestionModel{Metadata: postgresql.Metadata{ID: id}}
+	suggestion := &ImproveSuggestionModel{Metadata: bunovel.Metadata{ID: id}}
 
 	_, err := repository.db.NewDelete().Model(suggestion).WherePK().Exec(ctx)
 	if err != nil {
-		return errors.HandlePGError(err)
+		return bunovel.HandlePGError(err)
 	}
 
 	return nil
@@ -151,13 +150,13 @@ func (repository *improveSuggestionRepositoryImpl) Delete(ctx context.Context, i
 
 func (repository *improveSuggestionRepositoryImpl) Validate(ctx context.Context, validated bool, id uuid.UUID) (*ImproveSuggestionModel, error) {
 	suggestion := &ImproveSuggestionModel{
-		Metadata:  postgresql.Metadata{ID: id},
+		Metadata:  bunovel.Metadata{ID: id},
 		Validated: validated,
 	}
 
 	err := repository.db.NewUpdate().Model(suggestion).Column("validated").WherePK().Returning("*").Scan(ctx)
 	if err != nil {
-		return nil, errors.HandlePGError(err)
+		return nil, bunovel.HandlePGError(err)
 	}
 
 	return suggestion, nil
@@ -165,17 +164,17 @@ func (repository *improveSuggestionRepositoryImpl) Validate(ctx context.Context,
 
 func (repository *improveSuggestionRepositoryImpl) UpdateVotes(ctx context.Context, id uuid.UUID, upVotes, downVotes int) error {
 	suggestion := &ImproveSuggestionModel{
-		Metadata:  postgresql.Metadata{ID: id},
+		Metadata:  bunovel.Metadata{ID: id},
 		UpVotes:   upVotes,
 		DownVotes: downVotes,
 	}
 
 	rows, err := repository.db.NewUpdate().Model(suggestion).Column("up_votes", "down_votes").WherePK().Exec(ctx)
 	if err != nil {
-		return errors.HandlePGError(err)
+		return bunovel.HandlePGError(err)
 	}
 
-	if err := errors.ForceRowsUpdate(rows); err != nil {
+	if err := bunovel.ForceRowsUpdate(rows); err != nil {
 		return err
 	}
 
@@ -217,7 +216,7 @@ func (repository *improveSuggestionRepositoryImpl) Search(ctx context.Context, q
 
 	count, err := queryBuilder.ScanAndCount(ctx)
 	if err != nil {
-		return nil, 0, errors.HandlePGError(err)
+		return nil, 0, bunovel.HandlePGError(err)
 	}
 
 	return suggestions, count, nil
@@ -228,7 +227,7 @@ func (repository *improveSuggestionRepositoryImpl) List(ctx context.Context, ids
 
 	err := repository.db.NewSelect().Model(&suggestions).Where("id IN (?)", bun.In(ids)).Scan(ctx)
 	if err != nil {
-		return nil, errors.HandlePGError(err)
+		return nil, bunovel.HandlePGError(err)
 	}
 
 	return suggestions, nil

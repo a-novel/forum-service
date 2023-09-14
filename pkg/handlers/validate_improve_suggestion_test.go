@@ -6,8 +6,7 @@ import (
 	"github.com/a-novel/forum-service/pkg/handlers"
 	"github.com/a-novel/forum-service/pkg/services"
 	servicesmocks "github.com/a-novel/forum-service/pkg/services/mocks"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -35,22 +34,22 @@ func TestValidateImproveSuggestionHandler(t *testing.T) {
 			name: "Success",
 			body: map[string]interface{}{
 				"validated": true,
-				"id":        test.NumberUUID(1).String(),
+				"id":        goframework.NumberUUID(1).String(),
 			},
 			shouldCallService:              true,
 			shouldCallServiceWithValidated: true,
-			shouldCallServiceWithID:        test.NumberUUID(1),
+			shouldCallServiceWithID:        goframework.NumberUUID(1),
 			expectStatus:                   http.StatusNoContent,
 		},
 		{
 			name: "Error/ErrNotTheCreator",
 			body: map[string]interface{}{
 				"validated": true,
-				"id":        test.NumberUUID(1).String(),
+				"id":        goframework.NumberUUID(1).String(),
 			},
 			shouldCallService:              true,
 			shouldCallServiceWithValidated: true,
-			shouldCallServiceWithID:        test.NumberUUID(1),
+			shouldCallServiceWithID:        goframework.NumberUUID(1),
 			serviceErr:                     services.ErrNotTheCreator,
 			expectStatus:                   http.StatusUnauthorized,
 		},
@@ -58,12 +57,12 @@ func TestValidateImproveSuggestionHandler(t *testing.T) {
 			name: "Error/ErrInvalidCredentials",
 			body: map[string]interface{}{
 				"validated": true,
-				"id":        test.NumberUUID(1).String(),
+				"id":        goframework.NumberUUID(1).String(),
 			},
 			shouldCallService:              true,
 			shouldCallServiceWithValidated: true,
-			shouldCallServiceWithID:        test.NumberUUID(1),
-			serviceErr:                     errors.ErrInvalidCredentials,
+			shouldCallServiceWithID:        goframework.NumberUUID(1),
+			serviceErr:                     goframework.ErrInvalidCredentials,
 			expectStatus:                   http.StatusForbidden,
 		},
 		{

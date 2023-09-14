@@ -3,11 +3,11 @@ package handlers_test
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/handlers"
 	"github.com/a-novel/forum-service/pkg/models"
 	servicesmocks "github.com/a-novel/forum-service/pkg/services/mocks"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -38,25 +38,25 @@ func TestCreateImproveSuggestionHandler(t *testing.T) {
 			body: map[string]interface{}{
 				"title":     "title",
 				"content":   "content",
-				"requestID": test.NumberUUID(1).String(),
+				"requestID": goframework.NumberUUID(1).String(),
 			},
 			shouldCallService: true,
 			serviceResp: &models.ImproveSuggestion{
-				ID:        test.NumberUUID(1),
+				ID:        goframework.NumberUUID(1),
 				CreatedAt: baseTime,
-				RequestID: test.NumberUUID(1),
-				SourceID:  test.NumberUUID(10),
-				UserID:    test.NumberUUID(100),
+				RequestID: goframework.NumberUUID(1),
+				SourceID:  goframework.NumberUUID(10),
+				UserID:    goframework.NumberUUID(100),
 				Title:     "title",
 				Content:   "content",
 			},
 			expect: map[string]interface{}{
-				"id":        test.NumberUUID(1).String(),
+				"id":        goframework.NumberUUID(1).String(),
 				"createdAt": baseTime.Format(time.RFC3339),
 				"updatedAt": nil,
-				"requestID": test.NumberUUID(1).String(),
-				"sourceID":  test.NumberUUID(10).String(),
-				"userID":    test.NumberUUID(100).String(),
+				"requestID": goframework.NumberUUID(1).String(),
+				"sourceID":  goframework.NumberUUID(10).String(),
+				"userID":    goframework.NumberUUID(100).String(),
 				"title":     "title",
 				"content":   "content",
 				"upVotes":   float64(0),
@@ -71,10 +71,10 @@ func TestCreateImproveSuggestionHandler(t *testing.T) {
 			body: map[string]interface{}{
 				"title":     "title",
 				"content":   "content",
-				"requestID": test.NumberUUID(1).String(),
+				"requestID": goframework.NumberUUID(1).String(),
 			},
 			shouldCallService: true,
-			serviceErr:        errors.ErrInvalidCredentials,
+			serviceErr:        goframework.ErrInvalidCredentials,
 			expectStatus:      http.StatusForbidden,
 		},
 		{
@@ -83,10 +83,10 @@ func TestCreateImproveSuggestionHandler(t *testing.T) {
 			body: map[string]interface{}{
 				"title":     "title",
 				"content":   "content",
-				"requestID": test.NumberUUID(1).String(),
+				"requestID": goframework.NumberUUID(1).String(),
 			},
 			shouldCallService: true,
-			serviceErr:        errors.ErrInvalidEntity,
+			serviceErr:        goframework.ErrInvalidEntity,
 			expectStatus:      http.StatusUnprocessableEntity,
 		},
 		{
@@ -95,10 +95,10 @@ func TestCreateImproveSuggestionHandler(t *testing.T) {
 			body: map[string]interface{}{
 				"title":     "title",
 				"content":   "content",
-				"requestID": test.NumberUUID(1).String(),
+				"requestID": goframework.NumberUUID(1).String(),
 			},
 			shouldCallService: true,
-			serviceErr:        errors.ErrNotFound,
+			serviceErr:        bunovel.ErrNotFound,
 			expectStatus:      http.StatusNotFound,
 		},
 		{

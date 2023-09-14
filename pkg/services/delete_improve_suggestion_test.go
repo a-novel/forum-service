@@ -7,8 +7,7 @@ import (
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -36,28 +35,28 @@ func TestDeleteImproveSuggestionService(t *testing.T) {
 		{
 			name:  "Success",
 			token: "tokenRaw",
-			id:    test.NumberUUID(1),
+			id:    goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{
 				OK:    true,
-				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: test.NumberUUID(100)}},
+				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)}},
 			},
 			shouldCallGet: true,
 			getResp: &dao.ImproveSuggestionModel{
-				UserID: test.NumberUUID(100),
+				UserID: goframework.NumberUUID(100),
 			},
 			shouldCallDelete: true,
 		},
 		{
 			name:  "Error/DeleteFailure",
 			token: "tokenRaw",
-			id:    test.NumberUUID(1),
+			id:    goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{
 				OK:    true,
-				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: test.NumberUUID(100)}},
+				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)}},
 			},
 			shouldCallGet: true,
 			getResp: &dao.ImproveSuggestionModel{
-				UserID: test.NumberUUID(100),
+				UserID: goframework.NumberUUID(100),
 			},
 			shouldCallDelete: true,
 			deleteErr:        fooErr,
@@ -66,24 +65,24 @@ func TestDeleteImproveSuggestionService(t *testing.T) {
 		{
 			name:  "Error/NotTheCreator",
 			token: "tokenRaw",
-			id:    test.NumberUUID(1),
+			id:    goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{
 				OK:    true,
-				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: test.NumberUUID(200)}},
+				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(200)}},
 			},
 			shouldCallGet: true,
 			getResp: &dao.ImproveSuggestionModel{
-				UserID: test.NumberUUID(100),
+				UserID: goframework.NumberUUID(100),
 			},
-			expectErr: errors.ErrInvalidCredentials,
+			expectErr: goframework.ErrInvalidCredentials,
 		},
 		{
 			name:  "Error/GetFailure",
 			token: "tokenRaw",
-			id:    test.NumberUUID(1),
+			id:    goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{
 				OK:    true,
-				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: test.NumberUUID(200)}},
+				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(200)}},
 			},
 			shouldCallGet: true,
 			getErr:        fooErr,
@@ -92,14 +91,14 @@ func TestDeleteImproveSuggestionService(t *testing.T) {
 		{
 			name:           "Error/NotAuthenticated",
 			token:          "tokenRaw",
-			id:             test.NumberUUID(1),
+			id:             goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{},
-			expectErr:      errors.ErrInvalidCredentials,
+			expectErr:      goframework.ErrInvalidCredentials,
 		},
 		{
 			name:          "Error/AuthClientFailure",
 			token:         "tokenRaw",
-			id:            test.NumberUUID(1),
+			id:            goframework.NumberUUID(1),
 			authClientErr: fooErr,
 			expectErr:     fooErr,
 		},

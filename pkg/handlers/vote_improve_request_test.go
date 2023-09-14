@@ -3,12 +3,12 @@ package handlers_test
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/handlers"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
 	servicesmocks "github.com/a-novel/forum-service/pkg/services/mocks"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 	"net/http"
@@ -31,15 +31,15 @@ func TestVoteImproveRequestHandler(t *testing.T) {
 		{
 			name: "Success",
 			body: map[string]interface{}{
-				"id":        test.NumberUUID(1).String(),
-				"userID":    test.NumberUUID(2).String(),
+				"id":        goframework.NumberUUID(1).String(),
+				"userID":    goframework.NumberUUID(2).String(),
 				"upVotes":   10,
 				"downVotes": 5,
 			},
 			shouldCallService: true,
 			shouldCallServiceWith: models.UpdateImproveRequestVotesForm{
-				ID:        test.NumberUUID(1),
-				UserID:    test.NumberUUID(2),
+				ID:        goframework.NumberUUID(1),
+				UserID:    goframework.NumberUUID(2),
 				UpVotes:   10,
 				DownVotes: 5,
 			},
@@ -48,33 +48,33 @@ func TestVoteImproveRequestHandler(t *testing.T) {
 		{
 			name: "Error/ErrNotFound",
 			body: map[string]interface{}{
-				"id":        test.NumberUUID(1).String(),
-				"userID":    test.NumberUUID(2).String(),
+				"id":        goframework.NumberUUID(1).String(),
+				"userID":    goframework.NumberUUID(2).String(),
 				"upVotes":   10,
 				"downVotes": 5,
 			},
 			shouldCallService: true,
 			shouldCallServiceWith: models.UpdateImproveRequestVotesForm{
-				ID:        test.NumberUUID(1),
-				UserID:    test.NumberUUID(2),
+				ID:        goframework.NumberUUID(1),
+				UserID:    goframework.NumberUUID(2),
 				UpVotes:   10,
 				DownVotes: 5,
 			},
-			serviceErr:   errors.ErrNotFound,
+			serviceErr:   bunovel.ErrNotFound,
 			expectStatus: http.StatusNotFound,
 		},
 		{
 			name: "Error/ErrTheCreator",
 			body: map[string]interface{}{
-				"id":        test.NumberUUID(1).String(),
-				"userID":    test.NumberUUID(2).String(),
+				"id":        goframework.NumberUUID(1).String(),
+				"userID":    goframework.NumberUUID(2).String(),
 				"upVotes":   10,
 				"downVotes": 5,
 			},
 			shouldCallService: true,
 			shouldCallServiceWith: models.UpdateImproveRequestVotesForm{
-				ID:        test.NumberUUID(1),
-				UserID:    test.NumberUUID(2),
+				ID:        goframework.NumberUUID(1),
+				UserID:    goframework.NumberUUID(2),
 				UpVotes:   10,
 				DownVotes: 5,
 			},
@@ -85,7 +85,7 @@ func TestVoteImproveRequestHandler(t *testing.T) {
 			name: "Error/BadFor,",
 			body: map[string]interface{}{
 				"id":        "fake uuid",
-				"userID":    test.NumberUUID(2).String(),
+				"userID":    goframework.NumberUUID(2).String(),
 				"upVotes":   10,
 				"downVotes": 5,
 			},

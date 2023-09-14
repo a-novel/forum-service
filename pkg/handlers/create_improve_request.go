@@ -3,7 +3,8 @@ package handlers
 import (
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/errors"
+	"github.com/a-novel/go-apis"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
@@ -35,11 +36,11 @@ func (h *createImproveRequestHandlerImpl) Handle(c *gin.Context) {
 
 	res, err := h.service.Create(c, token, form.Title, form.Content, form.SourceID, uuid.New(), time.Now())
 	if err != nil {
-		errors.ErrorToHTTPCode(c, err, []errors.HTTPError{
+		apis.ErrorToHTTPCode(c, err, []apis.HTTPError{
 			{services.ErrNotTheCreator, http.StatusUnauthorized},
-			{errors.ErrInvalidCredentials, http.StatusForbidden},
-			{errors.ErrInvalidEntity, http.StatusUnprocessableEntity},
-		})
+			{goframework.ErrInvalidCredentials, http.StatusForbidden},
+			{goframework.ErrInvalidEntity, http.StatusUnprocessableEntity},
+		}, false)
 		return
 	}
 

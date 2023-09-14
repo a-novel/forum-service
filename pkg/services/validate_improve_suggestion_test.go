@@ -7,8 +7,7 @@ import (
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -42,20 +41,20 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			name:      "Success",
 			tokenRaw:  "token",
 			validated: true,
-			id:        test.NumberUUID(1),
+			id:        goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{
 				OK: true,
 				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: test.NumberUUID(100)},
+					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
 			shouldCallGetSuggestion: true,
 			getSuggestionResp: &dao.ImproveSuggestionModel{
-				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{RequestID: test.NumberUUID(10)},
+				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{RequestID: goframework.NumberUUID(10)},
 			},
 			shouldCallGetRequest: true,
 			getRequestResp: &dao.ImproveRequestRevisionModel{
-				UserID: test.NumberUUID(100),
+				UserID: goframework.NumberUUID(100),
 			},
 			shouldCallValidateSuggestion: true,
 		},
@@ -63,20 +62,20 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			name:      "Error/ValidateFailure",
 			tokenRaw:  "token",
 			validated: true,
-			id:        test.NumberUUID(1),
+			id:        goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{
 				OK: true,
 				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: test.NumberUUID(100)},
+					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
 			shouldCallGetSuggestion: true,
 			getSuggestionResp: &dao.ImproveSuggestionModel{
-				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{RequestID: test.NumberUUID(10)},
+				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{RequestID: goframework.NumberUUID(10)},
 			},
 			shouldCallGetRequest: true,
 			getRequestResp: &dao.ImproveRequestRevisionModel{
-				UserID: test.NumberUUID(100),
+				UserID: goframework.NumberUUID(100),
 			},
 			shouldCallValidateSuggestion: true,
 			validateSuggestionErr:        fooErr,
@@ -86,37 +85,37 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			name:      "Error/NotTheRequestOwner",
 			tokenRaw:  "token",
 			validated: true,
-			id:        test.NumberUUID(1),
+			id:        goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{
 				OK: true,
 				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: test.NumberUUID(100)},
+					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
 			shouldCallGetSuggestion: true,
 			getSuggestionResp: &dao.ImproveSuggestionModel{
-				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{RequestID: test.NumberUUID(10)},
+				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{RequestID: goframework.NumberUUID(10)},
 			},
 			shouldCallGetRequest: true,
 			getRequestResp: &dao.ImproveRequestRevisionModel{
-				UserID: test.NumberUUID(200),
+				UserID: goframework.NumberUUID(200),
 			},
-			expectErr: errors.ErrInvalidCredentials,
+			expectErr: goframework.ErrInvalidCredentials,
 		},
 		{
 			name:      "Error/GetRequestFailure",
 			tokenRaw:  "token",
 			validated: true,
-			id:        test.NumberUUID(1),
+			id:        goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{
 				OK: true,
 				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: test.NumberUUID(100)},
+					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
 			shouldCallGetSuggestion: true,
 			getSuggestionResp: &dao.ImproveSuggestionModel{
-				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{RequestID: test.NumberUUID(10)},
+				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{RequestID: goframework.NumberUUID(10)},
 			},
 			shouldCallGetRequest: true,
 			getRequestErr:        fooErr,
@@ -126,11 +125,11 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			name:      "Error/GetSuggestionFailure",
 			tokenRaw:  "token",
 			validated: true,
-			id:        test.NumberUUID(1),
+			id:        goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{
 				OK: true,
 				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: test.NumberUUID(100)},
+					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
 			shouldCallGetSuggestion: true,
@@ -141,15 +140,15 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			name:           "Error/NotAuthenticated",
 			tokenRaw:       "token",
 			validated:      true,
-			id:             test.NumberUUID(1),
+			id:             goframework.NumberUUID(1),
 			authClientResp: &authmodels.UserTokenStatus{},
-			expectErr:      errors.ErrInvalidCredentials,
+			expectErr:      goframework.ErrInvalidCredentials,
 		},
 		{
 			name:          "Error/IntrospectTokenFailure",
 			tokenRaw:      "token",
 			validated:     true,
-			id:            test.NumberUUID(1),
+			id:            goframework.NumberUUID(1),
 			authClientErr: fooErr,
 			expectErr:     fooErr,
 		},

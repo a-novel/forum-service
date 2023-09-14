@@ -5,7 +5,7 @@ import (
 	"github.com/a-novel/forum-service/pkg/handlers"
 	"github.com/a-novel/forum-service/pkg/models"
 	servicesmocks "github.com/a-novel/forum-service/pkg/services/mocks"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/samber/lo"
@@ -34,30 +34,30 @@ func TestListImproveSuggestionHandler(t *testing.T) {
 			name:                     "Success",
 			query:                    "?ids=01010101-0101-0101-0101-010101010101,02020202-0202-0202-0202-020202020202",
 			shouldCallService:        true,
-			shouldCallServiceWithIDs: []uuid.UUID{test.NumberUUID(1), test.NumberUUID(2)},
+			shouldCallServiceWithIDs: []uuid.UUID{goframework.NumberUUID(1), goframework.NumberUUID(2)},
 			serviceResp: []*models.ImproveSuggestion{
 				{
-					ID:        test.NumberUUID(1),
+					ID:        goframework.NumberUUID(1),
 					CreatedAt: baseTime,
 					UpdatedAt: lo.ToPtr(baseTime.Add(3 * time.Hour)),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
-					RequestID: test.NumberUUID(1),
+					RequestID: goframework.NumberUUID(1),
 					Title:     "title",
 					Content:   "content",
 				},
 				{
-					ID:        test.NumberUUID(2),
+					ID:        goframework.NumberUUID(2),
 					CreatedAt: baseTime,
 					UpdatedAt: lo.ToPtr(baseTime.Add(2 * time.Hour)),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
-					RequestID: test.NumberUUID(1),
+					RequestID: goframework.NumberUUID(1),
 					Title:     "title",
 					Content:   "content",
 				},
@@ -65,12 +65,12 @@ func TestListImproveSuggestionHandler(t *testing.T) {
 			expect: map[string]interface{}{
 				"previews": []interface{}{
 					map[string]interface{}{
-						"id":        test.NumberUUID(1).String(),
+						"id":        goframework.NumberUUID(1).String(),
 						"createdAt": baseTime.Format(time.RFC3339),
 						"updatedAt": baseTime.Add(3 * time.Hour).Format(time.RFC3339),
-						"sourceID":  test.NumberUUID(10).String(),
-						"userID":    test.NumberUUID(200).String(),
-						"requestID": test.NumberUUID(1).String(),
+						"sourceID":  goframework.NumberUUID(10).String(),
+						"userID":    goframework.NumberUUID(200).String(),
+						"requestID": goframework.NumberUUID(1).String(),
 						"validated": true,
 						"title":     "title",
 						"content":   "content",
@@ -78,12 +78,12 @@ func TestListImproveSuggestionHandler(t *testing.T) {
 						"downVotes": float64(8),
 					},
 					map[string]interface{}{
-						"id":        test.NumberUUID(2).String(),
+						"id":        goframework.NumberUUID(2).String(),
 						"createdAt": baseTime.Format(time.RFC3339),
 						"updatedAt": baseTime.Add(2 * time.Hour).Format(time.RFC3339),
-						"sourceID":  test.NumberUUID(20).String(),
-						"userID":    test.NumberUUID(100).String(),
-						"requestID": test.NumberUUID(1).String(),
+						"sourceID":  goframework.NumberUUID(20).String(),
+						"userID":    goframework.NumberUUID(100).String(),
+						"requestID": goframework.NumberUUID(1).String(),
 						"validated": false,
 						"title":     "title",
 						"content":   "content",

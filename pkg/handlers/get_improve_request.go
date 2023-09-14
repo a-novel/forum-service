@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/errors"
+	"github.com/a-novel/go-apis"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -31,9 +32,9 @@ func (h *getImproveRequestHandlerImpl) Handle(c *gin.Context) {
 
 	request, err := h.service.Get(c, query.ID.Value())
 	if err != nil {
-		errors.ErrorToHTTPCode(c, err, []errors.HTTPError{
-			{errors.ErrNotFound, http.StatusNotFound},
-		})
+		apis.ErrorToHTTPCode(c, err, []apis.HTTPError{
+			{bunovel.ErrNotFound, http.StatusNotFound},
+		}, false)
 		return
 	}
 

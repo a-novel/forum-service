@@ -2,14 +2,13 @@ package services_test
 
 import (
 	"context"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/postgresql"
-	"github.com/a-novel/go-framework/test"
-	"github.com/a-novel/go-framework/types"
+	"github.com/a-novel/go-apis"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -40,27 +39,27 @@ func TestSearchImproveSuggestionsService(t *testing.T) {
 			shouldCallDAO: true,
 			queryResults: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -69,28 +68,28 @@ func TestSearchImproveSuggestionsService(t *testing.T) {
 			queryTotal: 20,
 			expectedResults: []*models.ImproveSuggestion{
 				{
-					ID:        test.NumberUUID(1),
+					ID:        goframework.NumberUUID(1),
 					CreatedAt: baseTime,
 					UpdatedAt: lo.ToPtr(baseTime.Add(3 * time.Hour)),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
-					RequestID: test.NumberUUID(1),
+					RequestID: goframework.NumberUUID(1),
 					Title:     "title",
 					Content:   "content",
 				},
 				{
-					ID:        test.NumberUUID(2),
+					ID:        goframework.NumberUUID(2),
 					CreatedAt: baseTime,
 					UpdatedAt: lo.ToPtr(baseTime.Add(2 * time.Hour)),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
-					RequestID: test.NumberUUID(1),
+					RequestID: goframework.NumberUUID(1),
 					Title:     "title",
 					Content:   "content",
 				},
@@ -110,18 +109,18 @@ func TestSearchImproveSuggestionsService(t *testing.T) {
 		{
 			name: "Success/WithQuery",
 			query: models.SearchImproveSuggestionsQuery{
-				UserID:    types.StringUUID(test.NumberUUID(1).String()),
-				SourceID:  types.StringUUID(test.NumberUUID(2).String()),
-				RequestID: types.StringUUID(test.NumberUUID(3).String()),
+				UserID:    apis.StringUUID(goframework.NumberUUID(1).String()),
+				SourceID:  apis.StringUUID(goframework.NumberUUID(2).String()),
+				RequestID: apis.StringUUID(goframework.NumberUUID(3).String()),
 				Validated: lo.ToPtr(true),
 				Order:     models.OrderScore,
 				Limit:     10,
 			},
 			shouldCallDAO: true,
 			shouldCallDAOWithForm: dao.ImproveSuggestionSearchQuery{
-				UserID:    lo.ToPtr(test.NumberUUID(1)),
-				SourceID:  lo.ToPtr(test.NumberUUID(2)),
-				RequestID: lo.ToPtr(test.NumberUUID(3)),
+				UserID:    lo.ToPtr(goframework.NumberUUID(1)),
+				SourceID:  lo.ToPtr(goframework.NumberUUID(2)),
+				RequestID: lo.ToPtr(goframework.NumberUUID(3)),
 				Validated: lo.ToPtr(true),
 				Order:     &dao.ImproveSuggestionSearchQueryOrder{Score: true},
 			},
@@ -132,9 +131,9 @@ func TestSearchImproveSuggestionsService(t *testing.T) {
 		{
 			name: "Success/WithQueryInvalid",
 			query: models.SearchImproveSuggestionsQuery{
-				UserID:    types.StringUUID("invalid uuid"),
-				SourceID:  types.StringUUID("invalid uuid"),
-				RequestID: types.StringUUID("invalid uuid"),
+				UserID:    apis.StringUUID("invalid uuid"),
+				SourceID:  apis.StringUUID("invalid uuid"),
+				RequestID: apis.StringUUID("invalid uuid"),
 				Order:     "invalid order",
 				Limit:     10,
 			},
@@ -154,14 +153,14 @@ func TestSearchImproveSuggestionsService(t *testing.T) {
 		},
 		{
 			name:        "Error/NoLimit",
-			expectedErr: errors.ErrInvalidEntity,
+			expectedErr: goframework.ErrInvalidEntity,
 		},
 		{
 			name: "Error/LimitTooHigh",
 			query: models.SearchImproveSuggestionsQuery{
 				Limit: services.MaxSearchLimit + 1,
 			},
-			expectedErr: errors.ErrInvalidEntity,
+			expectedErr: goframework.ErrInvalidEntity,
 		},
 	}
 

@@ -5,7 +5,7 @@ import (
 	goerrors "errors"
 	auth "github.com/a-novel/auth-service/framework"
 	"github.com/a-novel/forum-service/pkg/dao"
-	"github.com/a-novel/go-framework/errors"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 )
 
@@ -31,7 +31,7 @@ func (s *deleteImproveRequestServiceImpl) Delete(ctx context.Context, tokenRaw s
 		return goerrors.Join(ErrIntrospectToken, err)
 	}
 	if !token.OK {
-		return goerrors.Join(errors.ErrInvalidCredentials, ErrInvalidToken)
+		return goerrors.Join(goframework.ErrInvalidCredentials, ErrInvalidToken)
 	}
 
 	request, err := s.repository.Get(ctx, id)
@@ -39,7 +39,7 @@ func (s *deleteImproveRequestServiceImpl) Delete(ctx context.Context, tokenRaw s
 		return goerrors.Join(ErrGetImproveRequestRevision, err)
 	}
 	if request.UserID != token.Token.Payload.ID {
-		return goerrors.Join(errors.ErrInvalidCredentials, ErrNotTheCreator)
+		return goerrors.Join(goframework.ErrInvalidCredentials, ErrNotTheCreator)
 	}
 
 	if err := s.repository.Delete(ctx, id); err != nil {
