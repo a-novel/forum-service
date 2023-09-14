@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	auth "github.com/a-novel/auth-service/framework"
 	"github.com/gin-gonic/gin"
 	"github.com/uptrace/bun"
 	"net/http"
@@ -15,7 +16,8 @@ func NewHealthCheckHandler(db *bun.DB) HealthCheckHandler {
 }
 
 type healthCheckHandlerImpl struct {
-	db *bun.DB
+	db         *bun.DB
+	authClient auth.Client
 }
 
 func (h *healthCheckHandlerImpl) Handle(c *gin.Context) {
@@ -25,7 +27,16 @@ func (h *healthCheckHandlerImpl) Handle(c *gin.Context) {
 		dbStatus["error"] = dbErr.Error()
 	}
 
+	authClientErr := h.authClient.Ping()
+	authClientStatus := gin.H{"available": authClientErr == nil}
+	if authClientErr != nil {
+		authClientStatus["error"] = authClientErr.Error()
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"database": dbStatus,
+		"clients": gin.H{
+			"auth": authClientStatus,
+		},
 	})
 }
