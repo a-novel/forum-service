@@ -7,8 +7,7 @@ import (
 	"github.com/a-novel/forum-service/pkg/adapters"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/models"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/validation"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"time"
 )
@@ -41,17 +40,17 @@ func (s *createImproveSuggestionServiceImpl) Create(ctx context.Context, tokenRa
 		return nil, goerrors.Join(ErrIntrospectToken, err)
 	}
 	if !token.OK {
-		return nil, goerrors.Join(errors.ErrInvalidCredentials, ErrInvalidToken)
+		return nil, goerrors.Join(goframework.ErrInvalidCredentials, ErrInvalidToken)
 	}
 
-	if err := validation.CheckMinMax(form.Title, MinTitleLength, MaxTitleLength); err != nil {
-		return nil, goerrors.Join(errors.ErrInvalidEntity, ErrInvalidTitle, err)
+	if err := goframework.CheckMinMax(form.Title, MinTitleLength, MaxTitleLength); err != nil {
+		return nil, goerrors.Join(goframework.ErrInvalidEntity, ErrInvalidTitle, err)
 	}
-	if err := validation.CheckMinMax(form.Content, MinContentLength, MaxContentLength); err != nil {
-		return nil, goerrors.Join(errors.ErrInvalidEntity, ErrInvalidContent, err)
+	if err := goframework.CheckMinMax(form.Content, MinContentLength, MaxContentLength); err != nil {
+		return nil, goerrors.Join(goframework.ErrInvalidEntity, ErrInvalidContent, err)
 	}
-	if err := validation.CheckRegexp(form.Title, titleRegexp); err != nil {
-		return nil, goerrors.Join(errors.ErrInvalidEntity, ErrInvalidTitle, err)
+	if err := goframework.CheckRegexp(form.Title, titleRegexp); err != nil {
+		return nil, goerrors.Join(goframework.ErrInvalidEntity, ErrInvalidTitle, err)
 	}
 
 	revision, err := s.requestRepository.GetRevision(ctx, form.RequestID)

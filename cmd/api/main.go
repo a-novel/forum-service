@@ -1,19 +1,35 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/config"
+	"github.com/a-novel/forum-service/migrations"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/handlers"
 	"github.com/a-novel/forum-service/pkg/services"
+	"github.com/a-novel/go-apis"
+	"io/fs"
 )
 
 func main() {
+	ctx := context.Background()
 	logger := config.GetLogger()
 	authClient := config.GetAuthClient()
 
-	postgres, closer := config.GetPostgres(logger)
-	defer closer()
+	postgres, sql, err := bunovel.NewClient(ctx, bunovel.Config{
+		Driver:                &bunovel.PGDriver{DSN: config.Postgres.DSN, AppName: config.App.Name},
+		Migrations:            &bunovel.MigrateConfig{Files: []fs.FS{migrations.Migrations}},
+		DiscardUnknownColumns: true,
+	})
+	if err != nil {
+		logger.Fatal().Err(err).Msg("error connecting to postgres")
+	}
+	defer func() {
+		_ = postgres.Close()
+		_ = sql.Close()
+	}()
 
 	improveRequestsDAO := dao.NewImproveRequestRepository(postgres)
 	improveSuggestionDAO := dao.NewImproveSuggestionRepository(postgres)
@@ -34,8 +50,6 @@ func main() {
 	updateImproveSuggestionService := services.NewUpdateImproveSuggestionService(improveSuggestionDAO, improveRequestsDAO, authClient)
 	validateImproveSuggestionService := services.NewValidateImproveSuggestionService(improveSuggestionDAO, improveRequestsDAO, authClient)
 
-	pingHandler := handlers.NewPingHandler()
-	healthCheckHandler := handlers.NewHealthCheckHandler(postgres, authClient)
 	createImproveRequestHandler := handlers.NewCreateImproveRequestHandler(createImproveRequestService)
 	createImproveSuggestionHandler := handlers.NewCreateImproveSuggestionHandler(createImproveSuggestionService)
 	deleteImproveRequestHandler := handlers.NewDeleteImproveRequestHandler(deleteImproveRequestService)
@@ -52,10 +66,21 @@ func main() {
 	updateImproveSuggestionHandler := handlers.NewUpdateImproveSuggestionHandler(updateImproveSuggestionService)
 	validateImproveSuggestionHandler := handlers.NewValidateImproveSuggestionHandler(validateImproveSuggestionService)
 
-	router := config.GetRouter(logger)
+	router := apis.GetRouter(apis.RouterConfig{
+		Logger:    logger,
+		ProjectID: config.Deploy.ProjectID,
+		CORS:      apis.GetCORS(config.App.Frontend.URLs),
+		Prod:      config.ENV == config.ProdENV,
+		Health: map[string]apis.HealthChecker{
+			"postgres": func() error {
+				return postgres.PingContext(ctx)
+			},
+			"auth-client": func() error {
+				return authClient.Ping()
+			},
+		},
+	})
 
-	router.GET("/ping", pingHandler.Handle)
-	router.GET("/healthcheck", healthCheckHandler.Handle)
 	router.PUT("/improve-request", createImproveRequestHandler.Handle)
 	router.PUT("/improve-suggestion", createImproveSuggestionHandler.Handle)
 	router.DELETE("/improve-request", deleteImproveRequestHandler.Handle)

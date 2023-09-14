@@ -2,14 +2,13 @@ package services_test
 
 import (
 	"context"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/postgresql"
-	"github.com/a-novel/go-framework/test"
-	"github.com/a-novel/go-framework/types"
+	"github.com/a-novel/go-apis"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -39,8 +38,8 @@ func TestSearchImproveRequestsService(t *testing.T) {
 			shouldCallDAO: true,
 			queryResults: []*dao.ImproveRequestPreview{
 				{
-					Metadata:                 postgresql.NewMetadata(test.NumberUUID(10), baseTime, nil),
-					UserID:                   test.NumberUUID(100),
+					Metadata:                 bunovel.NewMetadata(goframework.NumberUUID(10), baseTime, nil),
+					UserID:                   goframework.NumberUUID(100),
 					Title:                    "title",
 					Content:                  "content",
 					UpVotes:                  10,
@@ -50,8 +49,8 @@ func TestSearchImproveRequestsService(t *testing.T) {
 					RevisionCount:            3,
 				},
 				{
-					Metadata:                 postgresql.NewMetadata(test.NumberUUID(20), baseTime, nil),
-					UserID:                   test.NumberUUID(200),
+					Metadata:                 bunovel.NewMetadata(goframework.NumberUUID(20), baseTime, nil),
+					UserID:                   goframework.NumberUUID(200),
 					Title:                    "title",
 					Content:                  "content",
 					UpVotes:                  32,
@@ -64,9 +63,9 @@ func TestSearchImproveRequestsService(t *testing.T) {
 			queryTotal: 20,
 			expectedResults: []*models.ImproveRequestPreview{
 				{
-					ID:                       test.NumberUUID(10),
+					ID:                       goframework.NumberUUID(10),
 					CreatedAt:                baseTime,
-					UserID:                   test.NumberUUID(100),
+					UserID:                   goframework.NumberUUID(100),
 					Title:                    "title",
 					Content:                  "content",
 					UpVotes:                  10,
@@ -76,9 +75,9 @@ func TestSearchImproveRequestsService(t *testing.T) {
 					RevisionCount:            3,
 				},
 				{
-					ID:                       test.NumberUUID(20),
+					ID:                       goframework.NumberUUID(20),
 					CreatedAt:                baseTime,
-					UserID:                   test.NumberUUID(200),
+					UserID:                   goframework.NumberUUID(200),
 					Title:                    "title",
 					Content:                  "content",
 					UpVotes:                  32,
@@ -103,14 +102,14 @@ func TestSearchImproveRequestsService(t *testing.T) {
 		{
 			name: "Success/WithQuery",
 			query: models.SearchImproveRequestsQuery{
-				UserID: types.StringUUID(test.NumberUUID(1).String()),
+				UserID: apis.StringUUID(goframework.NumberUUID(1).String()),
 				Query:  "foo bar",
 				Order:  models.OrderScore,
 				Limit:  10,
 			},
 			shouldCallDAO: true,
 			shouldCallDAOWithForm: dao.ImproveRequestSearchQuery{
-				UserID: lo.ToPtr(test.NumberUUID(1)),
+				UserID: lo.ToPtr(goframework.NumberUUID(1)),
 				Query:  "foo bar",
 				Order:  &dao.ImproveRequestSearchQueryOrder{Score: true},
 			},
@@ -121,7 +120,7 @@ func TestSearchImproveRequestsService(t *testing.T) {
 		{
 			name: "Success/WithQueryInvalid",
 			query: models.SearchImproveRequestsQuery{
-				UserID: types.StringUUID("invalid uuid"),
+				UserID: apis.StringUUID("invalid uuid"),
 				Query:  "foo bar",
 				Order:  "invalid order",
 				Limit:  10,
@@ -145,14 +144,14 @@ func TestSearchImproveRequestsService(t *testing.T) {
 		},
 		{
 			name:        "Error/NoLimit",
-			expectedErr: errors.ErrInvalidEntity,
+			expectedErr: goframework.ErrInvalidEntity,
 		},
 		{
 			name: "Error/LimitTooHigh",
 			query: models.SearchImproveRequestsQuery{
 				Limit: services.MaxSearchLimit + 1,
 			},
-			expectedErr: errors.ErrInvalidEntity,
+			expectedErr: goframework.ErrInvalidEntity,
 		},
 	}
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	goerrors "errors"
 	"github.com/a-novel/forum-service/pkg/dao"
-	"github.com/a-novel/go-framework/errors"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 )
 
@@ -30,7 +30,7 @@ func (s *voteImproveRequestServiceImpl) Vote(ctx context.Context, id, userID uui
 
 	// User is not allowed to vote on its own post.
 	if request.UserID == userID {
-		return goerrors.Join(errors.ErrInvalidCredentials, ErrTheCreator)
+		return goerrors.Join(goframework.ErrInvalidCredentials, ErrTheCreator)
 	}
 
 	if err := s.repository.UpdateVotes(ctx, id, upVotes, downVotes); err != nil {

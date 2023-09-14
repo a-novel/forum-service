@@ -2,11 +2,11 @@ package handlers_test
 
 import (
 	"encoding/json"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/handlers"
 	"github.com/a-novel/forum-service/pkg/models"
 	servicesmocks "github.com/a-novel/forum-service/pkg/services/mocks"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -34,20 +34,20 @@ func TestGetImproveRequestRevisionHandler(t *testing.T) {
 			name:                    "Success",
 			query:                   "?id=01010101-0101-0101-0101-010101010101",
 			shouldCallService:       true,
-			shouldCallServiceWithID: test.NumberUUID(1),
+			shouldCallServiceWithID: goframework.NumberUUID(1),
 			serviceResp: &models.ImproveRequestRevision{
-				ID:        test.NumberUUID(1),
-				SourceID:  test.NumberUUID(10),
+				ID:        goframework.NumberUUID(1),
+				SourceID:  goframework.NumberUUID(10),
 				CreatedAt: baseTime,
-				UserID:    test.NumberUUID(100),
+				UserID:    goframework.NumberUUID(100),
 				Title:     "title",
 				Content:   "content",
 			},
 			expect: map[string]interface{}{
-				"id":        test.NumberUUID(1).String(),
+				"id":        goframework.NumberUUID(1).String(),
 				"createdAt": baseTime.Format(time.RFC3339),
-				"sourceID":  test.NumberUUID(10).String(),
-				"userID":    test.NumberUUID(100).String(),
+				"sourceID":  goframework.NumberUUID(10).String(),
+				"userID":    goframework.NumberUUID(100).String(),
 				"title":     "title",
 				"content":   "content",
 			},
@@ -57,8 +57,8 @@ func TestGetImproveRequestRevisionHandler(t *testing.T) {
 			name:                    "Errors/NotFound",
 			query:                   "?id=01010101-0101-0101-0101-010101010101",
 			shouldCallService:       true,
-			shouldCallServiceWithID: test.NumberUUID(1),
-			serviceErr:              errors.ErrNotFound,
+			shouldCallServiceWithID: goframework.NumberUUID(1),
+			serviceErr:              bunovel.ErrNotFound,
 			expectStatus:            http.StatusNotFound,
 		},
 	}

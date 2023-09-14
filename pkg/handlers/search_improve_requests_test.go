@@ -5,9 +5,8 @@ import (
 	"github.com/a-novel/forum-service/pkg/handlers"
 	"github.com/a-novel/forum-service/pkg/models"
 	servicesmocks "github.com/a-novel/forum-service/pkg/services/mocks"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
-	"github.com/a-novel/go-framework/types"
+	"github.com/a-novel/go-apis"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/require"
 	"net/http"
@@ -36,7 +35,7 @@ func TestSearchImproveRequestHandler(t *testing.T) {
 			query:             "?userID=01010101-0101-0101-0101-010101010101&query=foobar&limit=10&offset=20&order=score",
 			shouldCallService: true,
 			shouldCallServiceWith: models.SearchImproveRequestsQuery{
-				UserID: types.StringUUID(test.NumberUUID(1).String()),
+				UserID: apis.StringUUID(goframework.NumberUUID(1).String()),
 				Query:  "foobar",
 				Order:  models.OrderScore,
 				Limit:  10,
@@ -44,9 +43,9 @@ func TestSearchImproveRequestHandler(t *testing.T) {
 			},
 			serviceResp: []*models.ImproveRequestPreview{
 				{
-					ID:                       test.NumberUUID(22),
+					ID:                       goframework.NumberUUID(22),
 					CreatedAt:                baseTime.Add(time.Hour),
-					UserID:                   test.NumberUUID(201),
+					UserID:                   goframework.NumberUUID(201),
 					Title:                    "title",
 					Content:                  "content",
 					UpVotes:                  128,
@@ -56,9 +55,9 @@ func TestSearchImproveRequestHandler(t *testing.T) {
 					RevisionCount:            3,
 				},
 				{
-					ID:                       test.NumberUUID(2),
+					ID:                       goframework.NumberUUID(2),
 					CreatedAt:                baseTime,
-					UserID:                   test.NumberUUID(200),
+					UserID:                   goframework.NumberUUID(200),
 					Title:                    "title-2",
 					Content:                  "content-2",
 					UpVotes:                  256,
@@ -73,9 +72,9 @@ func TestSearchImproveRequestHandler(t *testing.T) {
 				"total": float64(200),
 				"res": []interface{}{
 					map[string]interface{}{
-						"id":                       test.NumberUUID(22).String(),
+						"id":                       goframework.NumberUUID(22).String(),
 						"createdAt":                baseTime.Add(time.Hour).Format(time.RFC3339),
-						"userID":                   test.NumberUUID(201).String(),
+						"userID":                   goframework.NumberUUID(201).String(),
 						"title":                    "title",
 						"content":                  "content",
 						"upVotes":                  float64(128),
@@ -85,9 +84,9 @@ func TestSearchImproveRequestHandler(t *testing.T) {
 						"revisionsCount":           float64(3),
 					},
 					map[string]interface{}{
-						"id":                       test.NumberUUID(2).String(),
+						"id":                       goframework.NumberUUID(2).String(),
 						"createdAt":                baseTime.Format(time.RFC3339),
-						"userID":                   test.NumberUUID(200).String(),
+						"userID":                   goframework.NumberUUID(200).String(),
 						"title":                    "title-2",
 						"content":                  "content-2",
 						"upVotes":                  float64(256),
@@ -107,9 +106,9 @@ func TestSearchImproveRequestHandler(t *testing.T) {
 			shouldCallServiceWith: models.SearchImproveRequestsQuery{Limit: 10},
 			serviceResp: []*models.ImproveRequestPreview{
 				{
-					ID:                       test.NumberUUID(22),
+					ID:                       goframework.NumberUUID(22),
 					CreatedAt:                baseTime.Add(time.Hour),
-					UserID:                   test.NumberUUID(201),
+					UserID:                   goframework.NumberUUID(201),
 					Title:                    "title",
 					Content:                  "content",
 					UpVotes:                  128,
@@ -119,9 +118,9 @@ func TestSearchImproveRequestHandler(t *testing.T) {
 					RevisionCount:            3,
 				},
 				{
-					ID:                       test.NumberUUID(2),
+					ID:                       goframework.NumberUUID(2),
 					CreatedAt:                baseTime,
-					UserID:                   test.NumberUUID(200),
+					UserID:                   goframework.NumberUUID(200),
 					Title:                    "title-2",
 					Content:                  "content-2",
 					UpVotes:                  256,
@@ -136,9 +135,9 @@ func TestSearchImproveRequestHandler(t *testing.T) {
 				"total": float64(200),
 				"res": []interface{}{
 					map[string]interface{}{
-						"id":                       test.NumberUUID(22).String(),
+						"id":                       goframework.NumberUUID(22).String(),
 						"createdAt":                baseTime.Add(time.Hour).Format(time.RFC3339),
-						"userID":                   test.NumberUUID(201).String(),
+						"userID":                   goframework.NumberUUID(201).String(),
 						"title":                    "title",
 						"content":                  "content",
 						"upVotes":                  float64(128),
@@ -148,9 +147,9 @@ func TestSearchImproveRequestHandler(t *testing.T) {
 						"revisionsCount":           float64(3),
 					},
 					map[string]interface{}{
-						"id":                       test.NumberUUID(2).String(),
+						"id":                       goframework.NumberUUID(2).String(),
 						"createdAt":                baseTime.Format(time.RFC3339),
-						"userID":                   test.NumberUUID(200).String(),
+						"userID":                   goframework.NumberUUID(200).String(),
 						"title":                    "title-2",
 						"content":                  "content-2",
 						"upVotes":                  float64(256),
@@ -168,7 +167,7 @@ func TestSearchImproveRequestHandler(t *testing.T) {
 			query:                 "?limit=10",
 			shouldCallService:     true,
 			shouldCallServiceWith: models.SearchImproveRequestsQuery{Limit: 10},
-			serviceErr:            errors.ErrInvalidEntity,
+			serviceErr:            goframework.ErrInvalidEntity,
 			expectStatus:          http.StatusBadRequest,
 		},
 	}

@@ -2,11 +2,10 @@ package dao_test
 
 import (
 	"context"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/migrations"
 	"github.com/a-novel/forum-service/pkg/dao"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/postgresql"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
@@ -17,20 +16,20 @@ import (
 )
 
 func TestImproveSuggestionRepository_Get(t *testing.T) {
-	db, sqlDB := test.GetPostgres(t, []fs.FS{migrations.Migrations})
+	db, sqlDB := bunovel.GetTestPostgres(t, []fs.FS{migrations.Migrations})
 	defer db.Close()
 	defer sqlDB.Close()
 
 	fixtures := []interface{}{
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, &updateTime),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, &updateTime),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   128,
 			DownVotes: 64,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
@@ -47,16 +46,16 @@ func TestImproveSuggestionRepository_Get(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			id:   test.NumberUUID(1),
+			id:   goframework.NumberUUID(1),
 			expect: &dao.ImproveSuggestionModel{
-				Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, &updateTime),
-				SourceID:  test.NumberUUID(10),
-				UserID:    test.NumberUUID(100),
+				Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, &updateTime),
+				SourceID:  goframework.NumberUUID(10),
+				UserID:    goframework.NumberUUID(100),
 				UpVotes:   128,
 				DownVotes: 64,
 				Validated: true,
 				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-					RequestID: test.NumberUUID(1),
+					RequestID: goframework.NumberUUID(1),
 					Title:     "title",
 					Content:   "content",
 				},
@@ -64,12 +63,12 @@ func TestImproveSuggestionRepository_Get(t *testing.T) {
 		},
 		{
 			name:      "Error/NotFound",
-			id:        test.NumberUUID(2),
-			expectErr: errors.ErrNotFound,
+			id:        goframework.NumberUUID(2),
+			expectErr: bunovel.ErrNotFound,
 		},
 	}
 
-	err := test.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
+	err := bunovel.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
 		repository := dao.NewImproveSuggestionRepository(tx)
 
 		for _, d := range data {
@@ -84,20 +83,20 @@ func TestImproveSuggestionRepository_Get(t *testing.T) {
 }
 
 func TestImproveSuggestionRepository_Create(t *testing.T) {
-	db, sqlDB := test.GetPostgres(t, []fs.FS{migrations.Migrations})
+	db, sqlDB := bunovel.GetTestPostgres(t, []fs.FS{migrations.Migrations})
 	defer db.Close()
 	defer sqlDB.Close()
 
 	fixtures := []interface{}{
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, &updateTime),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, &updateTime),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   128,
 			DownVotes: 64,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
@@ -119,20 +118,20 @@ func TestImproveSuggestionRepository_Create(t *testing.T) {
 		{
 			name: "Success",
 			data: &dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(2),
+				RequestID: goframework.NumberUUID(2),
 				Title:     "my title",
 				Content:   "my content",
 			},
-			userID:   test.NumberUUID(200),
-			sourceID: test.NumberUUID(20),
-			id:       test.NumberUUID(2),
+			userID:   goframework.NumberUUID(200),
+			sourceID: goframework.NumberUUID(20),
+			id:       goframework.NumberUUID(2),
 			now:      baseTime,
 			expect: &dao.ImproveSuggestionModel{
-				Metadata: postgresql.NewMetadata(test.NumberUUID(2), baseTime, nil),
-				SourceID: test.NumberUUID(20),
-				UserID:   test.NumberUUID(200),
+				Metadata: bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, nil),
+				SourceID: goframework.NumberUUID(20),
+				UserID:   goframework.NumberUUID(200),
 				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-					RequestID: test.NumberUUID(2),
+					RequestID: goframework.NumberUUID(2),
 					Title:     "my title",
 					Content:   "my content",
 				},
@@ -141,20 +140,20 @@ func TestImproveSuggestionRepository_Create(t *testing.T) {
 		{
 			name: "Success/OnRevisionWithOtherSuggestions",
 			data: &dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "my title",
 				Content:   "my content",
 			},
-			userID:   test.NumberUUID(200),
-			sourceID: test.NumberUUID(10),
-			id:       test.NumberUUID(2),
+			userID:   goframework.NumberUUID(200),
+			sourceID: goframework.NumberUUID(10),
+			id:       goframework.NumberUUID(2),
 			now:      baseTime,
 			expect: &dao.ImproveSuggestionModel{
-				Metadata: postgresql.NewMetadata(test.NumberUUID(2), baseTime, nil),
-				SourceID: test.NumberUUID(10),
-				UserID:   test.NumberUUID(200),
+				Metadata: bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, nil),
+				SourceID: goframework.NumberUUID(10),
+				UserID:   goframework.NumberUUID(200),
 				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-					RequestID: test.NumberUUID(1),
+					RequestID: goframework.NumberUUID(1),
 					Title:     "my title",
 					Content:   "my content",
 				},
@@ -163,7 +162,7 @@ func TestImproveSuggestionRepository_Create(t *testing.T) {
 	}
 
 	for _, d := range data {
-		err := test.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
+		err := bunovel.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
 			repository := dao.NewImproveSuggestionRepository(tx)
 			t.Run(d.name, func(st *testing.T) {
 				res, err := repository.Create(ctx, d.data, d.userID, d.sourceID, d.id, d.now)
@@ -176,20 +175,20 @@ func TestImproveSuggestionRepository_Create(t *testing.T) {
 }
 
 func TestImproveSuggestionRepository_Update(t *testing.T) {
-	db, sqlDB := test.GetPostgres(t, []fs.FS{migrations.Migrations})
+	db, sqlDB := bunovel.GetTestPostgres(t, []fs.FS{migrations.Migrations})
 	defer db.Close()
 	defer sqlDB.Close()
 
 	fixtures := []interface{}{
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, &baseTime),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, &baseTime),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   128,
 			DownVotes: 64,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
@@ -209,21 +208,21 @@ func TestImproveSuggestionRepository_Update(t *testing.T) {
 		{
 			name: "Success",
 			data: &dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(2),
+				RequestID: goframework.NumberUUID(2),
 				Title:     "new title",
 				Content:   "new content",
 			},
-			id:  test.NumberUUID(1),
+			id:  goframework.NumberUUID(1),
 			now: updateTime,
 			expect: &dao.ImproveSuggestionModel{
-				Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, &updateTime),
-				SourceID:  test.NumberUUID(10),
-				UserID:    test.NumberUUID(100),
+				Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, &updateTime),
+				SourceID:  goframework.NumberUUID(10),
+				UserID:    goframework.NumberUUID(100),
 				UpVotes:   128,
 				DownVotes: 64,
 				Validated: true,
 				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-					RequestID: test.NumberUUID(2),
+					RequestID: goframework.NumberUUID(2),
 					Title:     "new title",
 					Content:   "new content",
 				},
@@ -232,18 +231,18 @@ func TestImproveSuggestionRepository_Update(t *testing.T) {
 		{
 			name: "Error/NotFound",
 			data: &dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(2),
+				RequestID: goframework.NumberUUID(2),
 				Title:     "new title",
 				Content:   "new content",
 			},
-			id:        test.NumberUUID(2),
+			id:        goframework.NumberUUID(2),
 			now:       updateTime,
-			expectErr: errors.ErrNotFound,
+			expectErr: bunovel.ErrNotFound,
 		},
 	}
 
 	for _, d := range data {
-		err := test.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
+		err := bunovel.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
 			repository := dao.NewImproveSuggestionRepository(tx)
 			t.Run(d.name, func(st *testing.T) {
 				res, err := repository.Update(ctx, d.data, d.id, d.now)
@@ -256,20 +255,20 @@ func TestImproveSuggestionRepository_Update(t *testing.T) {
 }
 
 func TestImproveSuggestionRepository_Delete(t *testing.T) {
-	db, sqlDB := test.GetPostgres(t, []fs.FS{migrations.Migrations})
+	db, sqlDB := bunovel.GetTestPostgres(t, []fs.FS{migrations.Migrations})
 	defer db.Close()
 	defer sqlDB.Close()
 
 	fixtures := []interface{}{
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, &baseTime),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, &baseTime),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   128,
 			DownVotes: 64,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
@@ -285,16 +284,16 @@ func TestImproveSuggestionRepository_Delete(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			id:   test.NumberUUID(1),
+			id:   goframework.NumberUUID(1),
 		},
 		{
 			name: "Success/NotFound",
-			id:   test.NumberUUID(2),
+			id:   goframework.NumberUUID(2),
 		},
 	}
 
 	for _, d := range data {
-		err := test.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
+		err := bunovel.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
 			repository := dao.NewImproveSuggestionRepository(tx)
 			t.Run(d.name, func(st *testing.T) {
 				err := repository.Delete(ctx, d.id)
@@ -306,32 +305,32 @@ func TestImproveSuggestionRepository_Delete(t *testing.T) {
 }
 
 func TestImproveSuggestionRepository_Validate(t *testing.T) {
-	db, sqlDB := test.GetPostgres(t, []fs.FS{migrations.Migrations})
+	db, sqlDB := bunovel.GetTestPostgres(t, []fs.FS{migrations.Migrations})
 	defer db.Close()
 	defer sqlDB.Close()
 
 	fixtures := []interface{}{
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, &baseTime),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, &baseTime),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   128,
 			DownVotes: 64,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
 		},
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, &baseTime),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, &baseTime),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   32,
 			DownVotes: 16,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
@@ -349,15 +348,15 @@ func TestImproveSuggestionRepository_Validate(t *testing.T) {
 	}{
 		{
 			name: "Success/UnValidate",
-			id:   test.NumberUUID(1),
+			id:   goframework.NumberUUID(1),
 			expect: &dao.ImproveSuggestionModel{
-				Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, &baseTime),
-				SourceID:  test.NumberUUID(10),
-				UserID:    test.NumberUUID(100),
+				Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, &baseTime),
+				SourceID:  goframework.NumberUUID(10),
+				UserID:    goframework.NumberUUID(100),
 				UpVotes:   128,
 				DownVotes: 64,
 				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-					RequestID: test.NumberUUID(1),
+					RequestID: goframework.NumberUUID(1),
 					Title:     "title",
 					Content:   "content",
 				},
@@ -366,16 +365,16 @@ func TestImproveSuggestionRepository_Validate(t *testing.T) {
 		{
 			name:      "Success/Validate",
 			validated: true,
-			id:        test.NumberUUID(2),
+			id:        goframework.NumberUUID(2),
 			expect: &dao.ImproveSuggestionModel{
-				Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, &baseTime),
-				SourceID:  test.NumberUUID(10),
-				UserID:    test.NumberUUID(100),
+				Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, &baseTime),
+				SourceID:  goframework.NumberUUID(10),
+				UserID:    goframework.NumberUUID(100),
 				UpVotes:   32,
 				DownVotes: 16,
 				Validated: true,
 				ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-					RequestID: test.NumberUUID(1),
+					RequestID: goframework.NumberUUID(1),
 					Title:     "title",
 					Content:   "content",
 				},
@@ -383,13 +382,13 @@ func TestImproveSuggestionRepository_Validate(t *testing.T) {
 		},
 		{
 			name:      "Error/NotFound",
-			id:        test.NumberUUID(3),
-			expectErr: errors.ErrNotFound,
+			id:        goframework.NumberUUID(3),
+			expectErr: bunovel.ErrNotFound,
 		},
 	}
 
 	for _, d := range data {
-		err := test.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
+		err := bunovel.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
 			repository := dao.NewImproveSuggestionRepository(tx)
 			t.Run(d.name, func(st *testing.T) {
 				res, err := repository.Validate(ctx, d.validated, d.id)
@@ -402,20 +401,20 @@ func TestImproveSuggestionRepository_Validate(t *testing.T) {
 }
 
 func TestImproveSuggestionRepository_UpdateVotes(t *testing.T) {
-	db, sqlDB := test.GetPostgres(t, []fs.FS{migrations.Migrations})
+	db, sqlDB := bunovel.GetTestPostgres(t, []fs.FS{migrations.Migrations})
 	defer db.Close()
 	defer sqlDB.Close()
 
 	fixtures := []interface{}{
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, &baseTime),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, &baseTime),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   128,
 			DownVotes: 64,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
@@ -433,21 +432,21 @@ func TestImproveSuggestionRepository_UpdateVotes(t *testing.T) {
 	}{
 		{
 			name:      "Success",
-			id:        test.NumberUUID(1),
+			id:        goframework.NumberUUID(1),
 			upVotes:   256,
 			downVotes: 128,
 		},
 		{
 			name:      "Error/NotFound",
-			id:        test.NumberUUID(2),
+			id:        goframework.NumberUUID(2),
 			upVotes:   256,
 			downVotes: 128,
-			expectErr: errors.ErrNotFound,
+			expectErr: bunovel.ErrNotFound,
 		},
 	}
 
 	for _, d := range data {
-		err := test.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
+		err := bunovel.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
 			repository := dao.NewImproveSuggestionRepository(tx)
 			t.Run(d.name, func(st *testing.T) {
 				err := repository.UpdateVotes(ctx, d.id, d.upVotes, d.downVotes)
@@ -459,58 +458,58 @@ func TestImproveSuggestionRepository_UpdateVotes(t *testing.T) {
 }
 
 func TestImproveSuggestionRepository_Search(t *testing.T) {
-	db, sqlDB := test.GetPostgres(t, []fs.FS{migrations.Migrations})
+	db, sqlDB := bunovel.GetTestPostgres(t, []fs.FS{migrations.Migrations})
 	defer db.Close()
 	defer sqlDB.Close()
 
 	fixtures := []interface{}{
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(200),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(200),
 			UpVotes:   16,
 			DownVotes: 8,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
 		},
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-			SourceID:  test.NumberUUID(20),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+			SourceID:  goframework.NumberUUID(20),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   32,
 			DownVotes: 16,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
 		},
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   64,
 			DownVotes: 32,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(2),
+				RequestID: goframework.NumberUUID(2),
 				Title:     "title",
 				Content:   "content",
 			},
 		},
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(4), baseTime, &baseTime),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(4), baseTime, &baseTime),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   128,
 			DownVotes: 64,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
@@ -532,52 +531,52 @@ func TestImproveSuggestionRepository_Search(t *testing.T) {
 			name: "Success",
 			expect: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   64,
 					DownVotes: 32,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(2),
+						RequestID: goframework.NumberUUID(2),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(4), baseTime, &baseTime),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(4), baseTime, &baseTime),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   128,
 					DownVotes: 64,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -588,43 +587,43 @@ func TestImproveSuggestionRepository_Search(t *testing.T) {
 		{
 			name: "Success/FilterUserID",
 			query: dao.ImproveSuggestionSearchQuery{
-				UserID: lo.ToPtr(test.NumberUUID(100)),
+				UserID: lo.ToPtr(goframework.NumberUUID(100)),
 			},
 			expect: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   64,
 					DownVotes: 32,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(2),
+						RequestID: goframework.NumberUUID(2),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(4), baseTime, &baseTime),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(4), baseTime, &baseTime),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   128,
 					DownVotes: 64,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -635,43 +634,43 @@ func TestImproveSuggestionRepository_Search(t *testing.T) {
 		{
 			name: "Success/FilterSourceID",
 			query: dao.ImproveSuggestionSearchQuery{
-				SourceID: lo.ToPtr(test.NumberUUID(10)),
+				SourceID: lo.ToPtr(goframework.NumberUUID(10)),
 			},
 			expect: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   64,
 					DownVotes: 32,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(2),
+						RequestID: goframework.NumberUUID(2),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(4), baseTime, &baseTime),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(4), baseTime, &baseTime),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   128,
 					DownVotes: 64,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -682,43 +681,43 @@ func TestImproveSuggestionRepository_Search(t *testing.T) {
 		{
 			name: "Success/FilterRequestID",
 			query: dao.ImproveSuggestionSearchQuery{
-				RequestID: lo.ToPtr(test.NumberUUID(1)),
+				RequestID: lo.ToPtr(goframework.NumberUUID(1)),
 			},
 			expect: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(4), baseTime, &baseTime),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(4), baseTime, &baseTime),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   128,
 					DownVotes: 64,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -733,40 +732,40 @@ func TestImproveSuggestionRepository_Search(t *testing.T) {
 			},
 			expect: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   64,
 					DownVotes: 32,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(2),
+						RequestID: goframework.NumberUUID(2),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -783,52 +782,52 @@ func TestImproveSuggestionRepository_Search(t *testing.T) {
 			},
 			expect: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(4), baseTime, &baseTime),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(4), baseTime, &baseTime),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   128,
 					DownVotes: 64,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   64,
 					DownVotes: 32,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(2),
+						RequestID: goframework.NumberUUID(2),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -841,27 +840,27 @@ func TestImproveSuggestionRepository_Search(t *testing.T) {
 			limit: 2,
 			expect: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -875,27 +874,27 @@ func TestImproveSuggestionRepository_Search(t *testing.T) {
 			limit:  2,
 			expect: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   64,
 					DownVotes: 32,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(2),
+						RequestID: goframework.NumberUUID(2),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -912,13 +911,13 @@ func TestImproveSuggestionRepository_Search(t *testing.T) {
 		{
 			name: "Success/NoResults",
 			query: dao.ImproveSuggestionSearchQuery{
-				RequestID: lo.ToPtr(test.NumberUUID(3)),
+				RequestID: lo.ToPtr(goframework.NumberUUID(3)),
 			},
 			expect: []*dao.ImproveSuggestionModel{},
 		},
 	}
 
-	err := test.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
+	err := bunovel.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
 		repository := dao.NewImproveSuggestionRepository(tx)
 
 		for _, d := range data {
@@ -934,58 +933,58 @@ func TestImproveSuggestionRepository_Search(t *testing.T) {
 }
 
 func TestImproveSuggestionRepository_List(t *testing.T) {
-	db, sqlDB := test.GetPostgres(t, []fs.FS{migrations.Migrations})
+	db, sqlDB := bunovel.GetTestPostgres(t, []fs.FS{migrations.Migrations})
 	defer db.Close()
 	defer sqlDB.Close()
 
 	fixtures := []interface{}{
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(200),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(200),
 			UpVotes:   16,
 			DownVotes: 8,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
 		},
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-			SourceID:  test.NumberUUID(20),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+			SourceID:  goframework.NumberUUID(20),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   32,
 			DownVotes: 16,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
 		},
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(3), baseTime, lo.ToPtr(baseTime.Add(time.Hour))),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   64,
 			DownVotes: 32,
 			Validated: true,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(2),
+				RequestID: goframework.NumberUUID(2),
 				Title:     "title",
 				Content:   "content",
 			},
 		},
 		&dao.ImproveSuggestionModel{
-			Metadata:  postgresql.NewMetadata(test.NumberUUID(4), baseTime, &baseTime),
-			SourceID:  test.NumberUUID(10),
-			UserID:    test.NumberUUID(100),
+			Metadata:  bunovel.NewMetadata(goframework.NumberUUID(4), baseTime, &baseTime),
+			SourceID:  goframework.NumberUUID(10),
+			UserID:    goframework.NumberUUID(100),
 			UpVotes:   128,
 			DownVotes: 64,
 			ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-				RequestID: test.NumberUUID(1),
+				RequestID: goframework.NumberUUID(1),
 				Title:     "title",
 				Content:   "content",
 			},
@@ -1002,30 +1001,30 @@ func TestImproveSuggestionRepository_List(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			ids:  []uuid.UUID{test.NumberUUID(1), test.NumberUUID(2), test.NumberUUID(6)},
+			ids:  []uuid.UUID{goframework.NumberUUID(1), goframework.NumberUUID(2), goframework.NumberUUID(6)},
 			expect: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -1039,7 +1038,7 @@ func TestImproveSuggestionRepository_List(t *testing.T) {
 		},
 	}
 
-	err := test.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
+	err := bunovel.RunTransactionalTest(db, fixtures, func(ctx context.Context, tx bun.Tx) {
 		repository := dao.NewImproveSuggestionRepository(tx)
 
 		for _, d := range data {

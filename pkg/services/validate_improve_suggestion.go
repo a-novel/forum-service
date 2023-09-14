@@ -5,7 +5,7 @@ import (
 	goerrors "errors"
 	auth "github.com/a-novel/auth-service/framework"
 	"github.com/a-novel/forum-service/pkg/dao"
-	"github.com/a-novel/go-framework/errors"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 )
 
@@ -37,7 +37,7 @@ func (s *validateImproveSuggestionServiceImpl) Validate(ctx context.Context, tok
 		return goerrors.Join(ErrIntrospectToken, err)
 	}
 	if !token.OK {
-		return goerrors.Join(errors.ErrInvalidCredentials, ErrInvalidToken)
+		return goerrors.Join(goframework.ErrInvalidCredentials, ErrInvalidToken)
 	}
 
 	suggestion, err := s.repository.Get(ctx, id)
@@ -51,7 +51,7 @@ func (s *validateImproveSuggestionServiceImpl) Validate(ctx context.Context, tok
 	}
 
 	if request.UserID != token.Token.Payload.ID {
-		return goerrors.Join(errors.ErrInvalidCredentials, ErrNotTheCreator)
+		return goerrors.Join(goframework.ErrInvalidCredentials, ErrNotTheCreator)
 	}
 
 	if _, err := s.repository.Validate(ctx, validated, id); err != nil {

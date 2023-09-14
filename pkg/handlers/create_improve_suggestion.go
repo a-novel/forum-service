@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/errors"
+	"github.com/a-novel/go-apis"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
@@ -35,11 +37,11 @@ func (h *createImproveSuggestionHandlerImpl) Handle(c *gin.Context) {
 
 	res, err := h.service.Create(c, token, form, uuid.New(), time.Now())
 	if err != nil {
-		errors.ErrorToHTTPCode(c, err, []errors.HTTPError{
-			{errors.ErrInvalidCredentials, http.StatusForbidden},
-			{errors.ErrNotFound, http.StatusNotFound},
-			{errors.ErrInvalidEntity, http.StatusUnprocessableEntity},
-		})
+		apis.ErrorToHTTPCode(c, err, []apis.HTTPError{
+			{goframework.ErrInvalidCredentials, http.StatusForbidden},
+			{bunovel.ErrNotFound, http.StatusNotFound},
+			{goframework.ErrInvalidEntity, http.StatusUnprocessableEntity},
+		}, false)
 		return
 	}
 

@@ -2,12 +2,12 @@ package services_test
 
 import (
 	"context"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/postgresql"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
@@ -29,30 +29,30 @@ func TestListImproveSuggestionsService(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			ids:  []uuid.UUID{test.NumberUUID(1), test.NumberUUID(2)},
+			ids:  []uuid.UUID{goframework.NumberUUID(1), goframework.NumberUUID(2)},
 			daoResp: []*dao.ImproveSuggestionModel{
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(1), baseTime, lo.ToPtr(baseTime.Add(3*time.Hour))),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
 				},
 				{
-					Metadata:  postgresql.NewMetadata(test.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					Metadata:  bunovel.NewMetadata(goframework.NumberUUID(2), baseTime, lo.ToPtr(baseTime.Add(2*time.Hour))),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
 					ImproveSuggestionModelCore: dao.ImproveSuggestionModelCore{
-						RequestID: test.NumberUUID(1),
+						RequestID: goframework.NumberUUID(1),
 						Title:     "title",
 						Content:   "content",
 					},
@@ -60,28 +60,28 @@ func TestListImproveSuggestionsService(t *testing.T) {
 			},
 			expected: []*models.ImproveSuggestion{
 				{
-					ID:        test.NumberUUID(1),
+					ID:        goframework.NumberUUID(1),
 					CreatedAt: baseTime,
 					UpdatedAt: lo.ToPtr(baseTime.Add(3 * time.Hour)),
-					SourceID:  test.NumberUUID(10),
-					UserID:    test.NumberUUID(200),
+					SourceID:  goframework.NumberUUID(10),
+					UserID:    goframework.NumberUUID(200),
 					UpVotes:   16,
 					DownVotes: 8,
 					Validated: true,
-					RequestID: test.NumberUUID(1),
+					RequestID: goframework.NumberUUID(1),
 					Title:     "title",
 					Content:   "content",
 				},
 				{
-					ID:        test.NumberUUID(2),
+					ID:        goframework.NumberUUID(2),
 					CreatedAt: baseTime,
 					UpdatedAt: lo.ToPtr(baseTime.Add(2 * time.Hour)),
-					SourceID:  test.NumberUUID(20),
-					UserID:    test.NumberUUID(100),
+					SourceID:  goframework.NumberUUID(20),
+					UserID:    goframework.NumberUUID(100),
 					UpVotes:   32,
 					DownVotes: 16,
 					Validated: true,
-					RequestID: test.NumberUUID(1),
+					RequestID: goframework.NumberUUID(1),
 					Title:     "title",
 					Content:   "content",
 				},
@@ -89,12 +89,12 @@ func TestListImproveSuggestionsService(t *testing.T) {
 		},
 		{
 			name:     "Success/NoResults",
-			ids:      []uuid.UUID{test.NumberUUID(1), test.NumberUUID(2)},
+			ids:      []uuid.UUID{goframework.NumberUUID(1), goframework.NumberUUID(2)},
 			expected: []*models.ImproveSuggestion{},
 		},
 		{
 			name:        "Error/DAOFailure",
-			ids:         []uuid.UUID{test.NumberUUID(1), test.NumberUUID(2)},
+			ids:         []uuid.UUID{goframework.NumberUUID(1), goframework.NumberUUID(2)},
 			daoErr:      fooErr,
 			expectedErr: fooErr,
 		},

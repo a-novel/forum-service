@@ -6,8 +6,7 @@ import (
 	"github.com/a-novel/forum-service/pkg/adapters"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/models"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/validation"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/samber/lo"
 )
 
@@ -26,8 +25,8 @@ type searchImproveRequestsServiceImpl struct {
 }
 
 func (s *searchImproveRequestsServiceImpl) Search(ctx context.Context, query models.SearchImproveRequestsQuery) ([]*models.ImproveRequestPreview, int, error) {
-	if err := validation.CheckMinMax(query.Limit, 1, MaxSearchLimit); err != nil {
-		return nil, 0, goerrors.Join(errors.ErrInvalidEntity, ErrInvalidSearchLimit, err)
+	if err := goframework.CheckMinMax(query.Limit, 1, MaxSearchLimit); err != nil {
+		return nil, 0, goerrors.Join(goframework.ErrInvalidEntity, ErrInvalidSearchLimit, err)
 	}
 
 	res, total, err := s.repository.Search(ctx, adapters.ImproveRequestSearchQueryToDAO(query), query.Limit, query.Offset)

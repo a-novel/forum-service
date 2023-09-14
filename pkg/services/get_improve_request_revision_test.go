@@ -2,12 +2,12 @@ package services_test
 
 import (
 	"context"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/postgresql"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -28,26 +28,26 @@ func TestGetImproveRequestRevisionService(t *testing.T) {
 	}{
 		{
 			name: "Success",
-			id:   test.NumberUUID(1),
+			id:   goframework.NumberUUID(1),
 			daoResp: &dao.ImproveRequestRevisionModel{
-				Metadata: postgresql.NewMetadata(test.NumberUUID(22), baseTime.Add(time.Hour), &updateTime),
-				SourceID: test.NumberUUID(20),
-				UserID:   test.NumberUUID(201),
+				Metadata: bunovel.NewMetadata(goframework.NumberUUID(22), baseTime.Add(time.Hour), &updateTime),
+				SourceID: goframework.NumberUUID(20),
+				UserID:   goframework.NumberUUID(201),
 				Title:    "title",
 				Content:  "content",
 			},
 			expect: &models.ImproveRequestRevision{
-				ID:        test.NumberUUID(22),
+				ID:        goframework.NumberUUID(22),
 				CreatedAt: baseTime.Add(time.Hour),
-				SourceID:  test.NumberUUID(20),
-				UserID:    test.NumberUUID(201),
+				SourceID:  goframework.NumberUUID(20),
+				UserID:    goframework.NumberUUID(201),
 				Title:     "title",
 				Content:   "content",
 			},
 		},
 		{
 			name:      "Error/DAOFailure",
-			id:        test.NumberUUID(1),
+			id:        goframework.NumberUUID(1),
 			daoErr:    fooErr,
 			expectErr: fooErr,
 		},

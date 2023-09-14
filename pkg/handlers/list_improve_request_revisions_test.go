@@ -2,11 +2,11 @@ package handlers_test
 
 import (
 	"encoding/json"
+	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/handlers"
 	"github.com/a-novel/forum-service/pkg/models"
 	servicesmocks "github.com/a-novel/forum-service/pkg/services/mocks"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -34,16 +34,16 @@ func TestListImproveRequestRevisionsHandler(t *testing.T) {
 			name:                    "Success",
 			query:                   "?id=01010101-0101-0101-0101-010101010101",
 			shouldCallService:       true,
-			shouldCallServiceWithID: test.NumberUUID(1),
+			shouldCallServiceWithID: goframework.NumberUUID(1),
 			serviceResp: []*models.ImproveRequestRevisionPreview{
 				{
-					ID:                       test.NumberUUID(1),
+					ID:                       goframework.NumberUUID(1),
 					CreatedAt:                baseTime,
 					SuggestionsCount:         10,
 					AcceptedSuggestionsCount: 5,
 				},
 				{
-					ID:                       test.NumberUUID(2),
+					ID:                       goframework.NumberUUID(2),
 					CreatedAt:                baseTime,
 					SuggestionsCount:         8,
 					AcceptedSuggestionsCount: 4,
@@ -52,13 +52,13 @@ func TestListImproveRequestRevisionsHandler(t *testing.T) {
 			expect: map[string]interface{}{
 				"revisions": []interface{}{
 					map[string]interface{}{
-						"id":                       test.NumberUUID(1).String(),
+						"id":                       goframework.NumberUUID(1).String(),
 						"createdAt":                baseTime.Format(time.RFC3339),
 						"suggestionsCount":         float64(10),
 						"acceptedSuggestionsCount": float64(5),
 					},
 					map[string]interface{}{
-						"id":                       test.NumberUUID(2).String(),
+						"id":                       goframework.NumberUUID(2).String(),
 						"createdAt":                baseTime.Format(time.RFC3339),
 						"suggestionsCount":         float64(8),
 						"acceptedSuggestionsCount": float64(4),
@@ -71,8 +71,8 @@ func TestListImproveRequestRevisionsHandler(t *testing.T) {
 			name:                    "Errors/NotFound",
 			query:                   "?id=01010101-0101-0101-0101-010101010101",
 			shouldCallService:       true,
-			shouldCallServiceWithID: test.NumberUUID(1),
-			serviceErr:              errors.ErrNotFound,
+			shouldCallServiceWithID: goframework.NumberUUID(1),
+			serviceErr:              bunovel.ErrNotFound,
 			expectStatus:            http.StatusNotFound,
 		},
 	}

@@ -5,8 +5,7 @@ import (
 	"github.com/a-novel/forum-service/pkg/handlers"
 	"github.com/a-novel/forum-service/pkg/services"
 	servicesmocks "github.com/a-novel/forum-service/pkg/services/mocks"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -34,7 +33,7 @@ func TestDeleteImproveRequestRevisionHandler(t *testing.T) {
 			authorization:           "Bearer my-token",
 			query:                   "?id=01010101-0101-0101-0101-010101010101",
 			shouldCallService:       true,
-			shouldCallServiceWithID: test.NumberUUID(1),
+			shouldCallServiceWithID: goframework.NumberUUID(1),
 			expectStatus:            http.StatusNoContent,
 		},
 		{
@@ -42,8 +41,8 @@ func TestDeleteImproveRequestRevisionHandler(t *testing.T) {
 			authorization:           "Bearer my-token",
 			query:                   "?id=01010101-0101-0101-0101-010101010101",
 			shouldCallService:       true,
-			shouldCallServiceWithID: test.NumberUUID(1),
-			serviceErr:              errors.ErrInvalidCredentials,
+			shouldCallServiceWithID: goframework.NumberUUID(1),
+			serviceErr:              goframework.ErrInvalidCredentials,
 			expectStatus:            http.StatusForbidden,
 		},
 		{
@@ -51,7 +50,7 @@ func TestDeleteImproveRequestRevisionHandler(t *testing.T) {
 			authorization:           "Bearer my-token",
 			query:                   "?id=01010101-0101-0101-0101-010101010101",
 			shouldCallService:       true,
-			shouldCallServiceWithID: test.NumberUUID(1),
+			shouldCallServiceWithID: goframework.NumberUUID(1),
 			serviceErr:              services.ErrNotTheCreator,
 			expectStatus:            http.StatusUnauthorized,
 		},

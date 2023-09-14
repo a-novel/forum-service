@@ -5,8 +5,7 @@ import (
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/services"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/test"
+	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -31,23 +30,23 @@ func TestVoteImproveSuggestionService(t *testing.T) {
 	}{
 		{
 			name:      "Success",
-			id:        test.NumberUUID(1),
-			userID:    test.NumberUUID(100),
+			id:        goframework.NumberUUID(1),
+			userID:    goframework.NumberUUID(100),
 			upVotes:   10,
 			downVotes: 5,
 			getRevision: &dao.ImproveSuggestionModel{
-				UserID: test.NumberUUID(200),
+				UserID: goframework.NumberUUID(200),
 			},
 			shouldCallUpdateVotes: true,
 		},
 		{
 			name:      "Error/UpdateFailure",
-			id:        test.NumberUUID(1),
-			userID:    test.NumberUUID(100),
+			id:        goframework.NumberUUID(1),
+			userID:    goframework.NumberUUID(100),
 			upVotes:   10,
 			downVotes: 5,
 			getRevision: &dao.ImproveSuggestionModel{
-				UserID: test.NumberUUID(200),
+				UserID: goframework.NumberUUID(200),
 			},
 			shouldCallUpdateVotes: true,
 			updateVotesErr:        fooErr,
@@ -55,19 +54,19 @@ func TestVoteImproveSuggestionService(t *testing.T) {
 		},
 		{
 			name:      "Error/IsTheCreator",
-			id:        test.NumberUUID(1),
-			userID:    test.NumberUUID(100),
+			id:        goframework.NumberUUID(1),
+			userID:    goframework.NumberUUID(100),
 			upVotes:   10,
 			downVotes: 5,
 			getRevision: &dao.ImproveSuggestionModel{
-				UserID: test.NumberUUID(100),
+				UserID: goframework.NumberUUID(100),
 			},
-			expectErr: errors.ErrInvalidCredentials,
+			expectErr: goframework.ErrInvalidCredentials,
 		},
 		{
 			name:           "Error/GetRevisionFailure",
-			id:             test.NumberUUID(1),
-			userID:         test.NumberUUID(100),
+			id:             goframework.NumberUUID(1),
+			userID:         goframework.NumberUUID(100),
 			upVotes:        10,
 			downVotes:      5,
 			getRevisionErr: fooErr,

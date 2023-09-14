@@ -3,8 +3,7 @@ package dao
 import (
 	"context"
 	"fmt"
-	"github.com/a-novel/go-framework/errors"
-	"github.com/a-novel/go-framework/postgresql"
+	"github.com/a-novel/bunovel"
 	"github.com/google/uuid"
 	"github.com/uptrace/bun"
 	"strings"
@@ -25,7 +24,7 @@ type ImproveRequestRepository interface {
 
 type ImproveRequestModel struct {
 	bun.BaseModel `bun:"table:improve_requests"`
-	postgresql.Metadata
+	bunovel.Metadata
 
 	// UpVotes is the number of up votes the request has received. This value is indirectly updated from the
 	// votes table.
@@ -37,7 +36,7 @@ type ImproveRequestModel struct {
 
 type ImproveRequestRevisionModel struct {
 	bun.BaseModel `bun:"table:improve_requests_revisions"`
-	postgresql.Metadata
+	bunovel.Metadata
 
 	// SourceID points to the first revision. It is equal to the ID if no other revision exist.
 	// An improvement request is never updated. Instead, new revisions are created every time.
@@ -53,7 +52,7 @@ type ImproveRequestRevisionModel struct {
 
 type ImproveRequestRevisionPreview struct {
 	bun.BaseModel `bun:"table:improve_requests_revisions_list"`
-	postgresql.Metadata
+	bunovel.Metadata
 
 	SuggestionsCount         int `bun:"suggestions_count"`
 	AcceptedSuggestionsCount int `bun:"accepted_suggestions_count"`
@@ -61,7 +60,7 @@ type ImproveRequestRevisionPreview struct {
 
 type ImproveRequestPreview struct {
 	bun.BaseModel `bun:"table:improve_requests_previews"`
-	postgresql.Metadata
+	bunovel.Metadata
 
 	// UserID is the ID of the user who created the request, or edited the revision.
 	UserID uuid.UUID `bun:"user_id,type:uuid"`
@@ -110,11 +109,11 @@ func NewImproveRequestRepository(db bun.IDB) ImproveRequestRepository {
 
 func (repository *improveRequestRepositoryImpl) GetRevision(ctx context.Context, id uuid.UUID) (*ImproveRequestRevisionModel, error) {
 	model := &ImproveRequestRevisionModel{
-		Metadata: postgresql.Metadata{ID: id},
+		Metadata: bunovel.Metadata{ID: id},
 	}
 
 	if err := repository.db.NewSelect().Model(model).WherePK().Scan(ctx); err != nil {
-		return nil, errors.HandlePGError(err)
+		return nil, bunovel.HandlePGError(err)
 	}
 
 	return model, nil
@@ -122,11 +121,11 @@ func (repository *improveRequestRepositoryImpl) GetRevision(ctx context.Context,
 
 func (repository *improveRequestRepositoryImpl) Get(ctx context.Context, id uuid.UUID) (*ImproveRequestPreview, error) {
 	model := &ImproveRequestPreview{
-		Metadata: postgresql.Metadata{ID: id},
+		Metadata: bunovel.Metadata{ID: id},
 	}
 
 	if err := repository.db.NewSelect().Model(model).WherePK().Scan(ctx); err != nil {
-		return nil, errors.HandlePGError(err)
+		return nil, bunovel.HandlePGError(err)
 	}
 
 	return model, nil
@@ -136,18 +135,18 @@ func (repository *improveRequestRepositoryImpl) ListRevisions(ctx context.Contex
 	models := make([]*ImproveRequestRevisionPreview, 0)
 
 	if err := repository.db.NewSelect().Model(&models).Where("source_id = ?", id).Order("created_at DESC").Scan(ctx); err != nil {
-		return nil, errors.HandlePGError(err)
+		return nil, bunovel.HandlePGError(err)
 	}
 
 	if len(models) == 0 {
-		return nil, errors.ErrNotFound
+		return nil, bunovel.ErrNotFound
 	}
 
 	return models, nil
 }
 
 func (repository *improveRequestRepositoryImpl) UpdateVotes(ctx context.Context, id uuid.UUID, upVotes, downVotes int) error {
-	model := &ImproveRequestModel{Metadata: postgresql.Metadata{ID: id}, UpVotes: upVotes, DownVotes: downVotes}
+	model := &ImproveRequestModel{Metadata: bunovel.Metadata{ID: id}, UpVotes: upVotes, DownVotes: downVotes}
 
 	rows, err := repository.db.NewUpdate().
 		Model(model).
@@ -155,10 +154,10 @@ func (repository *improveRequestRepositoryImpl) UpdateVotes(ctx context.Context,
 		WherePK().
 		Exec(ctx)
 	if err != nil {
-		return errors.HandlePGError(err)
+		return bunovel.HandlePGError(err)
 	}
 
-	if err := errors.ForceRowsUpdate(rows); err != nil {
+	if err := bunovel.ForceRowsUpdate(rows); err != nil {
 		return err
 	}
 
@@ -170,7 +169,7 @@ func (repository *improveRequestRepositoryImpl) Create(ctx context.Context, user
 
 	if err := repository.db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
 		model := &ImproveRequestModel{
-			Metadata: postgresql.NewMetadata(sourceID, now, nil),
+			Metadata: bunovel.NewMetadata(sourceID, now, nil),
 		}
 
 		exists, err := repository.db.NewSelect().Model(model).WherePK().Exists(ctx)
@@ -185,7 +184,7 @@ func (repository *improveRequestRepositoryImpl) Create(ctx context.Context, user
 		}
 
 		revisionModel := &ImproveRequestRevisionModel{
-			Metadata: postgresql.NewMetadata(id, now, nil),
+			Metadata: bunovel.NewMetadata(id, now, nil),
 			SourceID: sourceID,
 			UserID:   userID,
 			Title:    title,
@@ -199,20 +198,20 @@ func (repository *improveRequestRepositoryImpl) Create(ctx context.Context, user
 		output.UserID = userID
 		output.Title = title
 		output.Content = content
-		output.Metadata = postgresql.Metadata{ID: sourceID, CreatedAt: now}
+		output.Metadata = bunovel.Metadata{ID: sourceID, CreatedAt: now}
 
 		return nil
 	}); err != nil {
-		return nil, errors.HandlePGError(err)
+		return nil, bunovel.HandlePGError(err)
 	}
 
 	return output, nil
 }
 
 func (repository *improveRequestRepositoryImpl) DeleteRevision(ctx context.Context, id uuid.UUID) error {
-	model := &ImproveRequestRevisionModel{Metadata: postgresql.Metadata{ID: id}}
+	model := &ImproveRequestRevisionModel{Metadata: bunovel.Metadata{ID: id}}
 	if _, err := repository.db.NewDelete().Model(model).WherePK().Exec(ctx); err != nil {
-		return errors.HandlePGError(err)
+		return bunovel.HandlePGError(err)
 	}
 
 	return nil
@@ -220,7 +219,7 @@ func (repository *improveRequestRepositoryImpl) DeleteRevision(ctx context.Conte
 
 func (repository *improveRequestRepositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	if err := repository.db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
-		model := &ImproveRequestModel{Metadata: postgresql.Metadata{ID: id}}
+		model := &ImproveRequestModel{Metadata: bunovel.Metadata{ID: id}}
 		if _, err := repository.db.NewDelete().Model(model).WherePK().Exec(ctx); err != nil {
 			return fmt.Errorf("failed to delete improve request: %w", err)
 		}
@@ -232,7 +231,7 @@ func (repository *improveRequestRepositoryImpl) Delete(ctx context.Context, id u
 
 		return nil
 	}); err != nil {
-		return errors.HandlePGError(err)
+		return bunovel.HandlePGError(err)
 	}
 
 	return nil
@@ -273,7 +272,7 @@ func (repository *improveRequestRepositoryImpl) Search(ctx context.Context, quer
 
 	count, err := queryBuilder.ScanAndCount(ctx)
 	if err != nil {
-		return nil, 0, errors.HandlePGError(err)
+		return nil, 0, bunovel.HandlePGError(err)
 	}
 
 	return model, count, nil
@@ -283,7 +282,7 @@ func (repository *improveRequestRepositoryImpl) List(ctx context.Context, ids []
 	model := make([]*ImproveRequestPreview, 0)
 
 	if err := repository.db.NewSelect().Model(&model).Where("id IN (?)", bun.In(ids)).Scan(ctx); err != nil {
-		return nil, errors.HandlePGError(err)
+		return nil, bunovel.HandlePGError(err)
 	}
 
 	return model, nil
