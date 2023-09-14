@@ -23,7 +23,7 @@ func main() {
 	getImproveSuggestionService := services.NewGetImproveSuggestionService(improveSuggestionDAO)
 
 	pingHandler := handlers.NewPingHandler()
-	healthCheckHandler := handlers.NewHealthCheckHandler(postgres)
+	healthCheckHandler := handlers.NewHealthCheckHandler(postgres, nil)
 	voteImproveRequestHandler := handlers.NewVoteImproveRequestHandler(voteImproveRequestService)
 	voteImproveSuggestionHandler := handlers.NewVoteImproveSuggestionHandler(voteImproveSuggestionService)
 	getImproveRequestHandler := handlers.NewGetImproveRequestHandler(getImproveRequestService)

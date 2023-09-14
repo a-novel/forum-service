@@ -133,6 +133,47 @@ func (_c *Client_GetImproveSuggestion_Call) RunAndReturn(run func(context.Contex
 	return _c
 }
 
+// Ping provides a mock function with given fields:
+func (_m *Client) Ping() error {
+	ret := _m.Called()
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// Client_Ping_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Ping'
+type Client_Ping_Call struct {
+	*mock.Call
+}
+
+// Ping is a helper method to define mock.On call
+func (_e *Client_Expecter) Ping() *Client_Ping_Call {
+	return &Client_Ping_Call{Call: _e.mock.On("Ping")}
+}
+
+func (_c *Client_Ping_Call) Run(run func()) *Client_Ping_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *Client_Ping_Call) Return(_a0 error) *Client_Ping_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *Client_Ping_Call) RunAndReturn(run func() error) *Client_Ping_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // VoteImproveRequest provides a mock function with given fields: ctx, form
 func (_m *Client) VoteImproveRequest(ctx context.Context, form models.UpdateImproveRequestVotesForm) error {
 	ret := _m.Called(ctx, form)

@@ -13,6 +13,8 @@ type Client interface {
 	VoteImproveSuggestion(ctx context.Context, form models.UpdateImproveSuggestionVotesForm) error
 	GetImproveRequest(ctx context.Context, query models.GetImproveRequestQuery) (*models.ImproveRequestPreview, error)
 	GetImproveSuggestion(ctx context.Context, query models.GetImproveSuggestionQuery) (*models.ImproveSuggestion, error)
+
+	Ping() error
 }
 
 type clientImpl struct {
@@ -75,4 +77,13 @@ func (a *clientImpl) GetImproveSuggestion(ctx context.Context, query models.GetI
 		SuccessStatuses: []int{http.StatusOK},
 		Client:          http.DefaultClient,
 	}, output)
+}
+
+func (a *clientImpl) Ping() error {
+	return client.MakeHTTPCall(context.Background(), client.HTTPCallConfig{
+		Path:            a.url.JoinPath("/ping"),
+		Method:          http.MethodGet,
+		SuccessStatuses: []int{http.StatusOK},
+		Client:          http.DefaultClient,
+	}, nil)
 }

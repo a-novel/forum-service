@@ -35,7 +35,7 @@ func main() {
 	validateImproveSuggestionService := services.NewValidateImproveSuggestionService(improveSuggestionDAO, improveRequestsDAO, authClient)
 
 	pingHandler := handlers.NewPingHandler()
-	healthCheckHandler := handlers.NewHealthCheckHandler(postgres)
+	healthCheckHandler := handlers.NewHealthCheckHandler(postgres, authClient)
 	createImproveRequestHandler := handlers.NewCreateImproveRequestHandler(createImproveRequestService)
 	createImproveSuggestionHandler := handlers.NewCreateImproveSuggestionHandler(createImproveSuggestionService)
 	deleteImproveRequestHandler := handlers.NewDeleteImproveRequestHandler(deleteImproveRequestService)
