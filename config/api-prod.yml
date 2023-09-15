@@ -1,4 +1,4 @@
-host: https://forum.agoradesecrivains.net
-hostInternal: https://agora-forum-service-internal-tgsqc5aoiq-od.a.run.app
 port: 8080
 portInternal: 8080
+external:
+  authAPI: https://auth.agoradesecrivains.net

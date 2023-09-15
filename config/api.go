@@ -12,10 +12,11 @@ var apiDevFile []byte
 var apiProdFile []byte
 
 type ApiConfig struct {
-	Host         string `yaml:"host"`
-	HostInternal string `yaml:"hostInternal"`
-	Port         int    `yaml:"port"`
-	PortInternal int    `yaml:"portInternal"`
+	Port         int `yaml:"port"`
+	PortInternal int `yaml:"portInternal"`
+	External     struct {
+		AuthAPI string `yaml:"authAPI"`
+	} `yaml:"external"`
 }
 
 var API *ApiConfig
