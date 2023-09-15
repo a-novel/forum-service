@@ -46,7 +46,6 @@ func main() {
 	router := apis.GetRouter(apis.RouterConfig{
 		Logger:    logger,
 		ProjectID: config.Deploy.ProjectID,
-		CORS:      apis.GetCORS(config.App.Frontend.URLs),
 		Prod:      config.ENV == config.ProdENV,
 		Health: map[string]apis.HealthChecker{
 			"postgres": func() error {

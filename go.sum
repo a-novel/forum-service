@@ -4,6 +4,8 @@ github.com/a-novel/bunovel v1.0.0 h1:KG/dwIddrDuMaH0e0f6aKF/uo03s/TnvtSOFkvzyV+Q
 github.com/a-novel/bunovel v1.0.0/go.mod h1:nd7BYN2rVmDNVBJUfGtPae2zNSMtqJX02sy1JGPbkQo=
 github.com/a-novel/go-apis v1.0.0 h1:VFDjnW9+A1og2kF6NPXuSPVIz6tDe2aS1ImQTesUCwY=
 github.com/a-novel/go-apis v1.0.0/go.mod h1:TpBGLA4WPcOprcZqr9ul3zY9Q5xESG8yU7XHoEFwMaI=
+github.com/a-novel/go-apis v1.0.2 h1:p6jOSR3Kv9hMWqNKPpNWq2uKukUt8bzZeo8IMNn91d0=
+github.com/a-novel/go-apis v1.0.2/go.mod h1:TpBGLA4WPcOprcZqr9ul3zY9Q5xESG8yU7XHoEFwMaI=
 github.com/a-novel/go-framework v1.0.1 h1:5rV26w7Pr45uhXQPxYmHX1sDGj3gRou6eMuFarffA0c=
 github.com/a-novel/go-framework v1.0.1/go.mod h1:4IbRbEvzEROmAoIkprQTYLr7f2p/dfjTLk4WpQNub/A=
 github.com/bytedance/sonic v1.5.0/go.mod h1:ED5hyg4y6t3/9Ku1R6dU/4KyJ48DZ4jPhfY1O2AihPM=
