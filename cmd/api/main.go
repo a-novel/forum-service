@@ -16,7 +16,7 @@ import (
 func main() {
 	ctx := context.Background()
 	logger := config.GetLogger()
-	authClient := config.GetAuthClient()
+	authClient := config.GetAuthClient(logger)
 
 	postgres, sql, err := bunovel.NewClient(ctx, bunovel.Config{
 		Driver:                &bunovel.PGDriver{DSN: config.Postgres.DSN, AppName: config.App.Name},

@@ -1,4 +1,4 @@
-host: http://localhost
-hostInternal: http://localhost
 port: 2041
 portInternal: 20041
+external:
+  authAPI: http://localhost:2040
