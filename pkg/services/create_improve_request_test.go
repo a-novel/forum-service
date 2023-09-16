@@ -31,8 +31,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 		authClientResp *apiclients.UserTokenStatus
 		authClientErr  error
 
-		shouldCallAuthorizationsClient bool
-		authorizationsClientErr        error
+		shouldCallPermissionsClient bool
+		permissionsClientErr        error
 
 		shouldCallGet bool
 		getResp       *dao.ImproveRequestPreview
@@ -59,9 +59,9 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			shouldCallGet:                  true,
-			shouldCallCreateRevision:       true,
+			shouldCallPermissionsClient: true,
+			shouldCallGet:               true,
+			shouldCallCreateRevision:    true,
 			createRevisionResp: &dao.ImproveRequestPreview{
 				Metadata: bunovel.NewMetadata(goframework.NumberUUID(10), baseTime, nil),
 				Title:    "title",
@@ -90,8 +90,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			shouldCallGet:                  true,
+			shouldCallPermissionsClient: true,
+			shouldCallGet:               true,
 			getResp: &dao.ImproveRequestPreview{
 				Metadata: bunovel.NewMetadata(goframework.NumberUUID(10), baseTime, nil),
 				Title:    "old title",
@@ -127,8 +127,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			shouldCallGet:                  true,
+			shouldCallPermissionsClient: true,
+			shouldCallGet:               true,
 			getResp: &dao.ImproveRequestPreview{
 				UserID: goframework.NumberUUID(100),
 			},
@@ -150,8 +150,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			shouldCallGet:                  true,
+			shouldCallPermissionsClient: true,
+			shouldCallGet:               true,
 			getResp: &dao.ImproveRequestPreview{
 				Metadata: bunovel.NewMetadata(goframework.NumberUUID(10), baseTime, nil),
 				Title:    "old title",
@@ -174,10 +174,10 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			shouldCallGet:                  true,
-			getErr:                         fooErr,
-			expectErr:                      fooErr,
+			shouldCallPermissionsClient: true,
+			shouldCallGet:               true,
+			getErr:                      fooErr,
+			expectErr:                   fooErr,
 		},
 		{
 			name:     "Error/BadTitle",
@@ -193,8 +193,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			expectErr:                      goframework.ErrInvalidEntity,
+			shouldCallPermissionsClient: true,
+			expectErr:                   goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/TitleTooShort",
@@ -210,8 +210,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			expectErr:                      goframework.ErrInvalidEntity,
+			shouldCallPermissionsClient: true,
+			expectErr:                   goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/NoTitle",
@@ -226,8 +226,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			expectErr:                      goframework.ErrInvalidEntity,
+			shouldCallPermissionsClient: true,
+			expectErr:                   goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/TitleTooLong",
@@ -243,8 +243,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			expectErr:                      goframework.ErrInvalidEntity,
+			shouldCallPermissionsClient: true,
+			expectErr:                   goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/ContentTooShort",
@@ -260,8 +260,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			expectErr:                      goframework.ErrInvalidEntity,
+			shouldCallPermissionsClient: true,
+			expectErr:                   goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/NoContent",
@@ -276,8 +276,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			expectErr:                      goframework.ErrInvalidEntity,
+			shouldCallPermissionsClient: true,
+			expectErr:                   goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/ContentTooLong",
@@ -293,8 +293,8 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			expectErr:                      goframework.ErrInvalidEntity,
+			shouldCallPermissionsClient: true,
+			expectErr:                   goframework.ErrInvalidEntity,
 		},
 		{
 			name:           "Error/NotAuthenticated",
@@ -319,7 +319,7 @@ func TestCreateImproveRequestService(t *testing.T) {
 			expectErr:     fooErr,
 		},
 		{
-			name:     "Error/GetAuthorizations",
+			name:     "Error/GetPermissions",
 			tokenRaw: "token",
 			title:    "title",
 			content:  "content",
@@ -332,9 +332,9 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallAuthorizationsClient: true,
-			authorizationsClientErr:        fooErr,
-			expectErr:                      fooErr,
+			shouldCallPermissionsClient: true,
+			permissionsClientErr:        fooErr,
+			expectErr:                   fooErr,
 		},
 	}
 
@@ -342,17 +342,17 @@ func TestCreateImproveRequestService(t *testing.T) {
 		t.Run(d.name, func(t *testing.T) {
 			repository := daomocks.NewImproveRequestRepository(t)
 			authClient := apiclientsmocks.NewAuthClient(t)
-			authorizationsClient := apiclientsmocks.NewAuthorizationsClient(t)
+			permissionsClient := apiclientsmocks.NewPermissionsClient(t)
 
 			authClient.On("IntrospectToken", context.Background(), d.tokenRaw).Return(d.authClientResp, d.authClientErr)
 
-			if d.shouldCallAuthorizationsClient {
-				authorizationsClient.
+			if d.shouldCallPermissionsClient {
+				permissionsClient.
 					On("HasUserScope", context.Background(), apiclients.HasUserScopeQuery{
 						UserID: d.authClientResp.Token.Payload.ID,
 						Scope:  apiclients.CanPostImproveRequest,
 					}).
-					Return(d.authorizationsClientErr)
+					Return(d.permissionsClientErr)
 			}
 
 			if d.shouldCallGet {
@@ -365,7 +365,7 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Return(d.createRevisionResp, d.createRevisionErr)
 			}
 
-			service := services.NewCreateImproveRequestService(repository, authClient, authorizationsClient)
+			service := services.NewCreateImproveRequestService(repository, authClient, permissionsClient)
 			res, err := service.Create(context.Background(), d.tokenRaw, d.title, d.content, d.sourceID, d.id, d.now)
 
 			require.ErrorIs(t, err, d.expectErr)
@@ -373,7 +373,7 @@ func TestCreateImproveRequestService(t *testing.T) {
 
 			repository.AssertExpectations(t)
 			authClient.AssertExpectations(t)
-			authorizationsClient.AssertExpectations(t)
+			permissionsClient.AssertExpectations(t)
 		})
 	}
 }

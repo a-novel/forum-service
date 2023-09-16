@@ -121,7 +121,7 @@ jobs:
         with:
           secrets: |
             POSTGRES_URL=agora-forum-service-postgres:latest
-            AUTHORIZATIONS_API=agora-ip-authorizations-service-internal:latest
+            PERMISSIONS_API=agora-ip-permissions-service-internal:latest
             AUTH_API=agora-ip-auth-service-internal:latest
           env_vars: |
             ENV=prod

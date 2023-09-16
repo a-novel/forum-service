@@ -20,19 +20,19 @@ type CreateImproveRequestService interface {
 func NewCreateImproveRequestService(
 	repository dao.ImproveRequestRepository,
 	authClient apiclients.AuthClient,
-	authorizationsClient apiclients.AuthorizationsClient,
+	permissionsClient apiclients.PermissionsClient,
 ) CreateImproveRequestService {
 	return &createImproveRequestServiceImpl{
-		repository:           repository,
-		authClient:           authClient,
-		authorizationsClient: authorizationsClient,
+		repository:        repository,
+		authClient:        authClient,
+		permissionsClient: permissionsClient,
 	}
 }
 
 type createImproveRequestServiceImpl struct {
-	repository           dao.ImproveRequestRepository
-	authClient           apiclients.AuthClient
-	authorizationsClient apiclients.AuthorizationsClient
+	repository        dao.ImproveRequestRepository
+	authClient        apiclients.AuthClient
+	permissionsClient apiclients.PermissionsClient
 }
 
 func (s *createImproveRequestServiceImpl) Create(ctx context.Context, tokenRaw, title, content string, sourceID, id uuid.UUID, now time.Time) (*models.ImproveRequestPreview, error) {
@@ -44,7 +44,7 @@ func (s *createImproveRequestServiceImpl) Create(ctx context.Context, tokenRaw, 
 		return nil, goerrors.Join(goframework.ErrInvalidCredentials, ErrInvalidToken)
 	}
 
-	if err := s.authorizationsClient.HasUserScope(ctx, apiclients.HasUserScopeQuery{
+	if err := s.permissionsClient.HasUserScope(ctx, apiclients.HasUserScopeQuery{
 		UserID: token.Token.Payload.ID,
 		Scope:  apiclients.CanPostImproveRequest,
 	}); err != nil {
