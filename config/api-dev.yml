@@ -2,4 +2,4 @@ port: 2041
 portInternal: 20041
 external:
   authAPI: http://localhost:20040
-  authorizationsAPI: http://localhost:20043
+  permissionsAPI: http://localhost:20043

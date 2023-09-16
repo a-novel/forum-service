@@ -20,21 +20,21 @@ func NewCreateImproveSuggestionService(
 	repository dao.ImproveSuggestionRepository,
 	requestRepository dao.ImproveRequestRepository,
 	authClient apiclients.AuthClient,
-	authorizationsClient apiclients.AuthorizationsClient,
+	permissionsClient apiclients.PermissionsClient,
 ) CreateImproveSuggestionService {
 	return &createImproveSuggestionServiceImpl{
-		repository:           repository,
-		requestRepository:    requestRepository,
-		authClient:           authClient,
-		authorizationsClient: authorizationsClient,
+		repository:        repository,
+		requestRepository: requestRepository,
+		authClient:        authClient,
+		permissionsClient: permissionsClient,
 	}
 }
 
 type createImproveSuggestionServiceImpl struct {
-	repository           dao.ImproveSuggestionRepository
-	requestRepository    dao.ImproveRequestRepository
-	authClient           apiclients.AuthClient
-	authorizationsClient apiclients.AuthorizationsClient
+	repository        dao.ImproveSuggestionRepository
+	requestRepository dao.ImproveRequestRepository
+	authClient        apiclients.AuthClient
+	permissionsClient apiclients.PermissionsClient
 }
 
 func (s *createImproveSuggestionServiceImpl) Create(ctx context.Context, tokenRaw string, form *models.ImproveSuggestionForm, id uuid.UUID, now time.Time) (*models.ImproveSuggestion, error) {
@@ -46,7 +46,7 @@ func (s *createImproveSuggestionServiceImpl) Create(ctx context.Context, tokenRa
 		return nil, goerrors.Join(goframework.ErrInvalidCredentials, ErrInvalidToken)
 	}
 
-	if err := s.authorizationsClient.HasUserScope(ctx, apiclients.HasUserScopeQuery{
+	if err := s.permissionsClient.HasUserScope(ctx, apiclients.HasUserScopeQuery{
 		UserID: token.Token.Payload.ID,
 		Scope:  apiclients.CanPostImproveSuggestion,
 	}); err != nil {

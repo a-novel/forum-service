@@ -4,7 +4,7 @@ go 1.21.1
 
 require (
 	github.com/a-novel/bunovel v1.0.1
-	github.com/a-novel/go-api-clients v1.0.8
+	github.com/a-novel/go-api-clients v1.0.9
 	github.com/a-novel/go-apis v1.0.3
 	github.com/a-novel/go-framework v1.0.2
 	github.com/gin-gonic/gin v1.9.1
