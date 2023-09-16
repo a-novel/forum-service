@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 	goerrors "errors"
-	auth "github.com/a-novel/auth-service/framework"
 	"github.com/a-novel/forum-service/pkg/dao"
+	apiclients "github.com/a-novel/go-api-clients"
 	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 )
@@ -13,7 +13,7 @@ type DeleteImproveSuggestionService interface {
 	Delete(ctx context.Context, tokenRaw string, id uuid.UUID) error
 }
 
-func NewDeleteImproveSuggestionService(repository dao.ImproveSuggestionRepository, authClient auth.Client) DeleteImproveSuggestionService {
+func NewDeleteImproveSuggestionService(repository dao.ImproveSuggestionRepository, authClient apiclients.AuthClient) DeleteImproveSuggestionService {
 	return &deleteImproveSuggestionServiceImpl{
 		repository: repository,
 		authClient: authClient,
@@ -22,7 +22,7 @@ func NewDeleteImproveSuggestionService(repository dao.ImproveSuggestionRepositor
 
 type deleteImproveSuggestionServiceImpl struct {
 	repository dao.ImproveSuggestionRepository
-	authClient auth.Client
+	authClient apiclients.AuthClient
 }
 
 func (s *deleteImproveSuggestionServiceImpl) Delete(ctx context.Context, tokenRaw string, id uuid.UUID) error {

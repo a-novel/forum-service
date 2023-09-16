@@ -2,11 +2,11 @@ package services_test
 
 import (
 	"context"
-	authmocks "github.com/a-novel/auth-service/framework/mocks"
-	authmodels "github.com/a-novel/auth-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/services"
+	apiclients "github.com/a-novel/go-api-clients"
+	apiclientsmocks "github.com/a-novel/go-api-clients/mocks"
 	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -20,7 +20,7 @@ func TestDeleteImproveRequestService(t *testing.T) {
 		token string
 		id    uuid.UUID
 
-		authClientResp *authmodels.UserTokenStatus
+		authClientResp *apiclients.UserTokenStatus
 		authClientErr  error
 
 		shouldCallGetRevision bool
@@ -36,9 +36,9 @@ func TestDeleteImproveRequestService(t *testing.T) {
 			name:  "Success",
 			token: "tokenRaw",
 			id:    goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK:    true,
-				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)}},
+				Token: &apiclients.UserToken{Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)}},
 			},
 			shouldCallGetRevision: true,
 			getRevisionResp: &dao.ImproveRequestPreview{
@@ -50,9 +50,9 @@ func TestDeleteImproveRequestService(t *testing.T) {
 			name:  "Error/DeleteRevisionFailure",
 			token: "tokenRaw",
 			id:    goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK:    true,
-				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)}},
+				Token: &apiclients.UserToken{Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)}},
 			},
 			shouldCallGetRevision: true,
 			getRevisionResp: &dao.ImproveRequestPreview{
@@ -66,9 +66,9 @@ func TestDeleteImproveRequestService(t *testing.T) {
 			name:  "Error/NotTheCreator",
 			token: "tokenRaw",
 			id:    goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK:    true,
-				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(200)}},
+				Token: &apiclients.UserToken{Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(200)}},
 			},
 			shouldCallGetRevision: true,
 			getRevisionResp: &dao.ImproveRequestPreview{
@@ -80,9 +80,9 @@ func TestDeleteImproveRequestService(t *testing.T) {
 			name:  "Error/GetRevisionFailure",
 			token: "tokenRaw",
 			id:    goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK:    true,
-				Token: &authmodels.UserToken{Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(200)}},
+				Token: &apiclients.UserToken{Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(200)}},
 			},
 			shouldCallGetRevision: true,
 			getRevisionErr:        fooErr,
@@ -92,7 +92,7 @@ func TestDeleteImproveRequestService(t *testing.T) {
 			name:           "Error/NotAuthenticated",
 			token:          "tokenRaw",
 			id:             goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{},
+			authClientResp: &apiclients.UserTokenStatus{},
 			expectErr:      goframework.ErrInvalidCredentials,
 		},
 		{
@@ -107,7 +107,7 @@ func TestDeleteImproveRequestService(t *testing.T) {
 	for _, d := range data {
 		t.Run(d.name, func(t *testing.T) {
 			repository := daomocks.NewImproveRequestRepository(t)
-			authClient := authmocks.NewClient(t)
+			authClient := apiclientsmocks.NewAuthClient(t)
 
 			authClient.On("IntrospectToken", context.Background(), d.token).Return(d.authClientResp, d.authClientErr)
 

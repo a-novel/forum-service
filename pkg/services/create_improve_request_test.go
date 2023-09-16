@@ -2,13 +2,13 @@ package services_test
 
 import (
 	"context"
-	authmocks "github.com/a-novel/auth-service/framework/mocks"
-	authmodels "github.com/a-novel/auth-service/pkg/models"
 	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
+	apiclients "github.com/a-novel/go-api-clients"
+	apiclientsmocks "github.com/a-novel/go-api-clients/mocks"
 	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -28,8 +28,11 @@ func TestCreateImproveRequestService(t *testing.T) {
 		id       uuid.UUID
 		now      time.Time
 
-		authClientResp *authmodels.UserTokenStatus
+		authClientResp *apiclients.UserTokenStatus
 		authClientErr  error
+
+		shouldCallAuthorizationsClient bool
+		authorizationsClientErr        error
 
 		shouldCallGet bool
 		getResp       *dao.ImproveRequestPreview
@@ -50,14 +53,15 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallGet:            true,
-			shouldCallCreateRevision: true,
+			shouldCallAuthorizationsClient: true,
+			shouldCallGet:                  true,
+			shouldCallCreateRevision:       true,
 			createRevisionResp: &dao.ImproveRequestPreview{
 				Metadata: bunovel.NewMetadata(goframework.NumberUUID(10), baseTime, nil),
 				Title:    "title",
@@ -80,13 +84,14 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallGet: true,
+			shouldCallAuthorizationsClient: true,
+			shouldCallGet:                  true,
 			getResp: &dao.ImproveRequestPreview{
 				Metadata: bunovel.NewMetadata(goframework.NumberUUID(10), baseTime, nil),
 				Title:    "old title",
@@ -116,13 +121,14 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallGet: true,
+			shouldCallAuthorizationsClient: true,
+			shouldCallGet:                  true,
 			getResp: &dao.ImproveRequestPreview{
 				UserID: goframework.NumberUUID(100),
 			},
@@ -138,13 +144,14 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallGet: true,
+			shouldCallAuthorizationsClient: true,
+			shouldCallGet:                  true,
 			getResp: &dao.ImproveRequestPreview{
 				Metadata: bunovel.NewMetadata(goframework.NumberUUID(10), baseTime, nil),
 				Title:    "old title",
@@ -161,15 +168,16 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallGet: true,
-			getErr:        fooErr,
-			expectErr:     fooErr,
+			shouldCallAuthorizationsClient: true,
+			shouldCallGet:                  true,
+			getErr:                         fooErr,
+			expectErr:                      fooErr,
 		},
 		{
 			name:     "Error/BadTitle",
@@ -179,13 +187,14 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/TitleTooShort",
@@ -195,13 +204,14 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/NoTitle",
@@ -210,13 +220,14 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/TitleTooLong",
@@ -226,13 +237,14 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/ContentTooShort",
@@ -242,13 +254,14 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/NoContent",
@@ -257,13 +270,14 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/ContentTooLong",
@@ -273,13 +287,14 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID: goframework.NumberUUID(10),
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:           "Error/NotAuthenticated",
@@ -289,7 +304,7 @@ func TestCreateImproveRequestService(t *testing.T) {
 			sourceID:       goframework.NumberUUID(10),
 			id:             goframework.NumberUUID(1),
 			now:            baseTime,
-			authClientResp: &authmodels.UserTokenStatus{},
+			authClientResp: &apiclients.UserTokenStatus{},
 			expectErr:      goframework.ErrInvalidCredentials,
 		},
 		{
@@ -303,14 +318,42 @@ func TestCreateImproveRequestService(t *testing.T) {
 			authClientErr: fooErr,
 			expectErr:     fooErr,
 		},
+		{
+			name:     "Error/GetAuthorizations",
+			tokenRaw: "token",
+			title:    "title",
+			content:  "content",
+			sourceID: goframework.NumberUUID(10),
+			id:       goframework.NumberUUID(1),
+			now:      baseTime,
+			authClientResp: &apiclients.UserTokenStatus{
+				OK: true,
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				},
+			},
+			shouldCallAuthorizationsClient: true,
+			authorizationsClientErr:        fooErr,
+			expectErr:                      fooErr,
+		},
 	}
 
 	for _, d := range data {
 		t.Run(d.name, func(t *testing.T) {
 			repository := daomocks.NewImproveRequestRepository(t)
-			authClient := authmocks.NewClient(t)
+			authClient := apiclientsmocks.NewAuthClient(t)
+			authorizationsClient := apiclientsmocks.NewAuthorizationsClient(t)
 
 			authClient.On("IntrospectToken", context.Background(), d.tokenRaw).Return(d.authClientResp, d.authClientErr)
+
+			if d.shouldCallAuthorizationsClient {
+				authorizationsClient.
+					On("HasUserScope", context.Background(), apiclients.HasUserScopeQuery{
+						UserID: d.authClientResp.Token.Payload.ID,
+						Scope:  apiclients.CanPostImproveRequest,
+					}).
+					Return(d.authorizationsClientErr)
+			}
 
 			if d.shouldCallGet {
 				repository.On("Get", context.Background(), d.sourceID).Return(d.getResp, d.getErr)
@@ -322,7 +365,7 @@ func TestCreateImproveRequestService(t *testing.T) {
 					Return(d.createRevisionResp, d.createRevisionErr)
 			}
 
-			service := services.NewCreateImproveRequestService(repository, authClient)
+			service := services.NewCreateImproveRequestService(repository, authClient, authorizationsClient)
 			res, err := service.Create(context.Background(), d.tokenRaw, d.title, d.content, d.sourceID, d.id, d.now)
 
 			require.ErrorIs(t, err, d.expectErr)
@@ -330,6 +373,7 @@ func TestCreateImproveRequestService(t *testing.T) {
 
 			repository.AssertExpectations(t)
 			authClient.AssertExpectations(t)
+			authorizationsClient.AssertExpectations(t)
 		})
 	}
 }

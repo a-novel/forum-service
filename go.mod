@@ -3,16 +3,16 @@ module github.com/a-novel/forum-service
 go 1.21.1
 
 require (
-	github.com/a-novel/auth-service v1.0.3
-	github.com/a-novel/bunovel v1.0.0
-	github.com/a-novel/go-apis v1.0.2
-	github.com/a-novel/go-framework v1.0.1
+	github.com/a-novel/bunovel v1.0.1
+	github.com/a-novel/go-api-clients v1.0.8
+	github.com/a-novel/go-apis v1.0.3
+	github.com/a-novel/go-framework v1.0.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/google/uuid v1.3.1
 	github.com/rs/zerolog v1.30.0
 	github.com/samber/lo v1.38.1
 	github.com/stretchr/testify v1.8.4
-	github.com/uptrace/bun v1.1.15
+	github.com/uptrace/bun v1.1.16
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -42,8 +42,8 @@ require (
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
-	github.com/uptrace/bun/dialect/pgdialect v1.1.15 // indirect
-	github.com/uptrace/bun/driver/pgdriver v1.1.15 // indirect
+	github.com/uptrace/bun/dialect/pgdialect v1.1.16 // indirect
+	github.com/uptrace/bun/driver/pgdriver v1.1.16 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	golang.org/x/arch v0.5.0 // indirect

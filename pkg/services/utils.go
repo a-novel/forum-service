@@ -21,6 +21,7 @@ var (
 	ErrInvalidSearchLimit = goerrors.New("(data) invalid search limit")
 
 	ErrIntrospectToken = goerrors.New("(dep) failed to introspect tokenRaw")
+	ErrGetScopes       = goerrors.New("(dep) failed to get scopes")
 
 	ErrListImproveRequestRevisions  = goerrors.New("(dao) failed to list improve request revisions")
 	ErrGetImproveRequestRevision    = goerrors.New("(dao) failed to get improve request revision")

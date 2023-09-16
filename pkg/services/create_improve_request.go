@@ -3,11 +3,11 @@ package services
 import (
 	"context"
 	goerrors "errors"
-	auth "github.com/a-novel/auth-service/framework"
 	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/adapters"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/models"
+	apiclients "github.com/a-novel/go-api-clients"
 	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"time"
@@ -17,16 +17,22 @@ type CreateImproveRequestService interface {
 	Create(ctx context.Context, tokenRaw, title, content string, sourceID, id uuid.UUID, now time.Time) (*models.ImproveRequestPreview, error)
 }
 
-func NewCreateImproveRequestService(repository dao.ImproveRequestRepository, authClient auth.Client) CreateImproveRequestService {
+func NewCreateImproveRequestService(
+	repository dao.ImproveRequestRepository,
+	authClient apiclients.AuthClient,
+	authorizationsClient apiclients.AuthorizationsClient,
+) CreateImproveRequestService {
 	return &createImproveRequestServiceImpl{
-		repository: repository,
-		authClient: authClient,
+		repository:           repository,
+		authClient:           authClient,
+		authorizationsClient: authorizationsClient,
 	}
 }
 
 type createImproveRequestServiceImpl struct {
-	repository dao.ImproveRequestRepository
-	authClient auth.Client
+	repository           dao.ImproveRequestRepository
+	authClient           apiclients.AuthClient
+	authorizationsClient apiclients.AuthorizationsClient
 }
 
 func (s *createImproveRequestServiceImpl) Create(ctx context.Context, tokenRaw, title, content string, sourceID, id uuid.UUID, now time.Time) (*models.ImproveRequestPreview, error) {
@@ -36,6 +42,13 @@ func (s *createImproveRequestServiceImpl) Create(ctx context.Context, tokenRaw, 
 	}
 	if !token.OK {
 		return nil, goerrors.Join(goframework.ErrInvalidCredentials, ErrInvalidToken)
+	}
+
+	if err := s.authorizationsClient.HasUserScope(ctx, apiclients.HasUserScopeQuery{
+		UserID: token.Token.Payload.ID,
+		Scope:  apiclients.CanPostImproveRequest,
+	}); err != nil {
+		return nil, goerrors.Join(ErrGetScopes, err)
 	}
 
 	if err := goframework.CheckMinMax(title, MinTitleLength, MaxTitleLength); err != nil {

@@ -41,7 +41,7 @@ func (h *createImproveSuggestionHandlerImpl) Handle(c *gin.Context) {
 			{goframework.ErrInvalidCredentials, http.StatusForbidden},
 			{bunovel.ErrNotFound, http.StatusNotFound},
 			{goframework.ErrInvalidEntity, http.StatusUnprocessableEntity},
-		}, false)
+		}, true)
 		return
 	}
 

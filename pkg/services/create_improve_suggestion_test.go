@@ -2,13 +2,13 @@ package services_test
 
 import (
 	"context"
-	authmocks "github.com/a-novel/auth-service/framework/mocks"
-	authmodels "github.com/a-novel/auth-service/pkg/models"
 	"github.com/a-novel/bunovel"
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/services"
+	apiclients "github.com/a-novel/go-api-clients"
+	apiclientsmocks "github.com/a-novel/go-api-clients/mocks"
 	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
@@ -27,8 +27,11 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 		id         uuid.UUID
 		now        time.Time
 
-		authClientResp *authmodels.UserTokenStatus
+		authClientResp *apiclients.UserTokenStatus
 		authClientErr  error
+
+		shouldCallAuthorizationsClient bool
+		authorizationsClientErr        error
 
 		shouldCallGetRevision bool
 		getRevisionResp       *dao.ImproveRequestRevisionModel
@@ -51,13 +54,14 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			tokenRaw: "token",
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallGetRevision: true,
+			shouldCallAuthorizationsClient: true,
+			shouldCallGetRevision:          true,
 			getRevisionResp: &dao.ImproveRequestRevisionModel{
 				SourceID: goframework.NumberUUID(10),
 			},
@@ -92,13 +96,14 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			tokenRaw: "token",
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallGetRevision: true,
+			shouldCallAuthorizationsClient: true,
+			shouldCallGetRevision:          true,
 			getRevisionResp: &dao.ImproveRequestRevisionModel{
 				SourceID: goframework.NumberUUID(10),
 			},
@@ -116,15 +121,16 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			tokenRaw: "token",
 			id:       goframework.NumberUUID(1),
 			now:      baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			shouldCallGetRevision: true,
-			getRevisionErr:        fooErr,
-			expectErr:             fooErr,
+			shouldCallAuthorizationsClient: true,
+			shouldCallGetRevision:          true,
+			getRevisionErr:                 fooErr,
+			expectErr:                      fooErr,
 		},
 		{
 			name:     "Error/BadTitle",
@@ -136,13 +142,14 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			},
 			id:  goframework.NumberUUID(1),
 			now: baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/TitleTooShort",
@@ -154,13 +161,14 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			},
 			id:  goframework.NumberUUID(1),
 			now: baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/NoTitle",
@@ -171,13 +179,14 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			},
 			id:  goframework.NumberUUID(1),
 			now: baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/TitleTooLong",
@@ -189,13 +198,14 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			},
 			id:  goframework.NumberUUID(1),
 			now: baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/ContentTooShort",
@@ -207,13 +217,14 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			},
 			id:  goframework.NumberUUID(1),
 			now: baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/NoContent",
@@ -224,13 +235,14 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			},
 			id:  goframework.NumberUUID(1),
 			now: baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/ContentTooLong",
@@ -242,13 +254,14 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			},
 			id:  goframework.NumberUUID(1),
 			now: baseTime,
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
-			expectErr: goframework.ErrInvalidEntity,
+			shouldCallAuthorizationsClient: true,
+			expectErr:                      goframework.ErrInvalidEntity,
 		},
 		{
 			name:     "Error/NotAuthenticated",
@@ -260,7 +273,7 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			},
 			id:             goframework.NumberUUID(1),
 			now:            baseTime,
-			authClientResp: &authmodels.UserTokenStatus{},
+			authClientResp: &apiclients.UserTokenStatus{},
 			expectErr:      goframework.ErrInvalidCredentials,
 		},
 		{
@@ -276,15 +289,45 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			authClientErr: fooErr,
 			expectErr:     fooErr,
 		},
+		{
+			name:     "Error/GetAuthorizations",
+			tokenRaw: "token",
+			id:       goframework.NumberUUID(1),
+			now:      baseTime,
+			suggestion: &models.ImproveSuggestionForm{
+				RequestID: goframework.NumberUUID(1),
+				Title:     "title",
+				Content:   "content",
+			},
+			authClientResp: &apiclients.UserTokenStatus{
+				OK: true,
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				},
+			},
+			shouldCallAuthorizationsClient: true,
+			authorizationsClientErr:        fooErr,
+			expectErr:                      fooErr,
+		},
 	}
 
 	for _, d := range data {
 		t.Run(d.name, func(t *testing.T) {
 			repository := daomocks.NewImproveSuggestionRepository(t)
 			requestsRepository := daomocks.NewImproveRequestRepository(t)
-			authClient := authmocks.NewClient(t)
+			authClient := apiclientsmocks.NewAuthClient(t)
+			authorizationsClient := apiclientsmocks.NewAuthorizationsClient(t)
 
 			authClient.On("IntrospectToken", context.Background(), d.tokenRaw).Return(d.authClientResp, d.authClientErr)
+
+			if d.shouldCallAuthorizationsClient {
+				authorizationsClient.
+					On("HasUserScope", context.Background(), apiclients.HasUserScopeQuery{
+						UserID: d.authClientResp.Token.Payload.ID,
+						Scope:  apiclients.CanPostImproveSuggestion,
+					}).
+					Return(d.authorizationsClientErr)
+			}
 
 			if d.shouldCallGetRevision {
 				requestsRepository.
@@ -298,7 +341,7 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 					Return(d.createSuggestionResp, d.createSuggestionErr)
 			}
 
-			service := services.NewCreateImproveSuggestionService(repository, requestsRepository, authClient)
+			service := services.NewCreateImproveSuggestionService(repository, requestsRepository, authClient, authorizationsClient)
 			resp, err := service.Create(context.Background(), d.tokenRaw, d.suggestion, d.id, d.now)
 
 			require.ErrorIs(t, err, d.expectErr)
@@ -307,6 +350,7 @@ func TestCreateImproveSuggestionService(t *testing.T) {
 			repository.AssertExpectations(t)
 			requestsRepository.AssertExpectations(t)
 			authClient.AssertExpectations(t)
+			authorizationsClient.AssertExpectations(t)
 		})
 	}
 }
