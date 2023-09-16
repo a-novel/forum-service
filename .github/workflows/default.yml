@@ -121,6 +121,8 @@ jobs:
         with:
           secrets: |
             POSTGRES_URL=agora-forum-service-postgres:latest
+            AUTHORIZATIONS_API=agora-ip-authorizations-service-internal:latest
+            AUTH_API=agora-ip-auth-service-internal:latest
           env_vars: |
             ENV=prod
             PROJECT_ID=${{ vars.PROJECT_ID }}
@@ -174,6 +176,6 @@ jobs:
           region: ${{ vars.REGION }}
           project_id: ${{ vars.PROJECT_ID }}
           image: ${{ env.IMAGE_NAME }}
-          flags: '--concurrency=100 --min-instances=1 --max-instances=3 --memory=512Mi --cpu=1 --platform=managed --allow-unauthenticated --port=8080 --cpu-boost --vpc-connector=agora-infra-connector --ingress=internal'
+          flags: '--concurrency=100 --min-instances=1 --max-instances=3 --memory=512Mi --cpu=1 --platform=managed --allow-unauthenticated --set-cloudsql-instances=agora-postgres --port=8080 --cpu-boost --vpc-connector=agora-infra-connector --ingress=internal'
       - name: 'show output'
         run: echo ${{ steps.deploy.outputs.url }}

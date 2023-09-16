@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 	goerrors "errors"
-	auth "github.com/a-novel/auth-service/framework"
 	"github.com/a-novel/forum-service/pkg/dao"
+	apiclients "github.com/a-novel/go-api-clients"
 	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 )
@@ -13,7 +13,7 @@ type DeleteImproveRequestRevisionService interface {
 	Delete(ctx context.Context, tokenRaw string, id uuid.UUID) error
 }
 
-func NewDeleteImproveRequestRevisionService(repository dao.ImproveRequestRepository, authClient auth.Client) DeleteImproveRequestRevisionService {
+func NewDeleteImproveRequestRevisionService(repository dao.ImproveRequestRepository, authClient apiclients.AuthClient) DeleteImproveRequestRevisionService {
 	return &deleteImproveRequestRevisionServiceImpl{
 		repository: repository,
 		authClient: authClient,
@@ -22,7 +22,7 @@ func NewDeleteImproveRequestRevisionService(repository dao.ImproveRequestReposit
 
 type deleteImproveRequestRevisionServiceImpl struct {
 	repository dao.ImproveRequestRepository
-	authClient auth.Client
+	authClient apiclients.AuthClient
 }
 
 func (s *deleteImproveRequestRevisionServiceImpl) Delete(ctx context.Context, tokenRaw string, id uuid.UUID) error {

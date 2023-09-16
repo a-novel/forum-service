@@ -1,4 +1,5 @@
 port: 8080
 portInternal: 8080
 external:
-  authAPI: https://auth.agoradesecrivains.net
+  authAPI: ${AUTH_API}
+  authorizationsAPI: ${AUTHORIZATIONS_API}

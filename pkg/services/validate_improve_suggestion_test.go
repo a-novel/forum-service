@@ -2,11 +2,11 @@ package services_test
 
 import (
 	"context"
-	authmocks "github.com/a-novel/auth-service/framework/mocks"
-	authmodels "github.com/a-novel/auth-service/pkg/models"
 	"github.com/a-novel/forum-service/pkg/dao"
 	daomocks "github.com/a-novel/forum-service/pkg/dao/mocks"
 	"github.com/a-novel/forum-service/pkg/services"
+	apiclients "github.com/a-novel/go-api-clients"
+	apiclientsmocks "github.com/a-novel/go-api-clients/mocks"
 	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -21,7 +21,7 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 		validated bool
 		id        uuid.UUID
 
-		authClientResp *authmodels.UserTokenStatus
+		authClientResp *apiclients.UserTokenStatus
 		authClientErr  error
 
 		shouldCallGetSuggestion bool
@@ -42,10 +42,10 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			tokenRaw:  "token",
 			validated: true,
 			id:        goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
 			shouldCallGetSuggestion: true,
@@ -63,10 +63,10 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			tokenRaw:  "token",
 			validated: true,
 			id:        goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
 			shouldCallGetSuggestion: true,
@@ -86,10 +86,10 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			tokenRaw:  "token",
 			validated: true,
 			id:        goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
 			shouldCallGetSuggestion: true,
@@ -107,10 +107,10 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			tokenRaw:  "token",
 			validated: true,
 			id:        goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
 			shouldCallGetSuggestion: true,
@@ -126,10 +126,10 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			tokenRaw:  "token",
 			validated: true,
 			id:        goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{
+			authClientResp: &apiclients.UserTokenStatus{
 				OK: true,
-				Token: &authmodels.UserToken{
-					Payload: authmodels.UserTokenPayload{ID: goframework.NumberUUID(100)},
+				Token: &apiclients.UserToken{
+					Payload: apiclients.UserTokenPayload{ID: goframework.NumberUUID(100)},
 				},
 			},
 			shouldCallGetSuggestion: true,
@@ -141,7 +141,7 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 			tokenRaw:       "token",
 			validated:      true,
 			id:             goframework.NumberUUID(1),
-			authClientResp: &authmodels.UserTokenStatus{},
+			authClientResp: &apiclients.UserTokenStatus{},
 			expectErr:      goframework.ErrInvalidCredentials,
 		},
 		{
@@ -158,7 +158,7 @@ func TestValidateImproveSuggestionService(t *testing.T) {
 		t.Run(d.name, func(t *testing.T) {
 			repository := daomocks.NewImproveSuggestionRepository(t)
 			requestRepository := daomocks.NewImproveRequestRepository(t)
-			authClient := authmocks.NewClient(t)
+			authClient := apiclientsmocks.NewAuthClient(t)
 
 			authClient.On("IntrospectToken", context.Background(), d.tokenRaw).Return(d.authClientResp, d.authClientErr)
 

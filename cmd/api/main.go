@@ -17,6 +17,7 @@ func main() {
 	ctx := context.Background()
 	logger := config.GetLogger()
 	authClient := config.GetAuthClient(logger)
+	authorizationsClient := config.GetAuthorizationsClient(logger)
 
 	postgres, sql, err := bunovel.NewClient(ctx, bunovel.Config{
 		Driver:                &bunovel.PGDriver{DSN: config.Postgres.DSN, AppName: config.App.Name},
@@ -34,8 +35,8 @@ func main() {
 	improveRequestsDAO := dao.NewImproveRequestRepository(postgres)
 	improveSuggestionDAO := dao.NewImproveSuggestionRepository(postgres)
 
-	createImproveRequestService := services.NewCreateImproveRequestService(improveRequestsDAO, authClient)
-	createImproveSuggestionService := services.NewCreateImproveSuggestionService(improveSuggestionDAO, improveRequestsDAO, authClient)
+	createImproveRequestService := services.NewCreateImproveRequestService(improveRequestsDAO, authClient, authorizationsClient)
+	createImproveSuggestionService := services.NewCreateImproveSuggestionService(improveSuggestionDAO, improveRequestsDAO, authClient, authorizationsClient)
 	deleteImproveRequestService := services.NewDeleteImproveRequestService(improveRequestsDAO, authClient)
 	deleteImproveRequestRevisionService := services.NewDeleteImproveRequestRevisionService(improveRequestsDAO, authClient)
 	deleteImproveSuggestionService := services.NewDeleteImproveSuggestionService(improveSuggestionDAO, authClient)
@@ -47,7 +48,7 @@ func main() {
 	listImproveSuggestionsService := services.NewListImproveSuggestionsService(improveSuggestionDAO)
 	searchImproveRequestsService := services.NewSearchImproveRequestsService(improveRequestsDAO)
 	searchImproveSuggestionsService := services.NewSearchImproveSuggestionsService(improveSuggestionDAO)
-	updateImproveSuggestionService := services.NewUpdateImproveSuggestionService(improveSuggestionDAO, improveRequestsDAO, authClient)
+	updateImproveSuggestionService := services.NewUpdateImproveSuggestionService(improveSuggestionDAO, improveRequestsDAO, authClient, authorizationsClient)
 	validateImproveSuggestionService := services.NewValidateImproveSuggestionService(improveSuggestionDAO, improveRequestsDAO, authClient)
 
 	createImproveRequestHandler := handlers.NewCreateImproveRequestHandler(createImproveRequestService)
@@ -76,7 +77,10 @@ func main() {
 				return postgres.PingContext(ctx)
 			},
 			"auth-client": func() error {
-				return authClient.Ping()
+				return authClient.Ping(ctx)
+			},
+			"authorizations-client": func() error {
+				return authorizationsClient.Ping(ctx)
 			},
 		},
 	})

@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 	goerrors "errors"
-	auth "github.com/a-novel/auth-service/framework"
 	"github.com/a-novel/forum-service/pkg/dao"
+	apiclients "github.com/a-novel/go-api-clients"
 	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 )
@@ -16,7 +16,7 @@ type ValidateImproveSuggestionService interface {
 func NewValidateImproveSuggestionService(
 	repository dao.ImproveSuggestionRepository,
 	requestRepository dao.ImproveRequestRepository,
-	authClient auth.Client,
+	authClient apiclients.AuthClient,
 ) ValidateImproveSuggestionService {
 	return &validateImproveSuggestionServiceImpl{
 		repository:        repository,
@@ -28,7 +28,7 @@ func NewValidateImproveSuggestionService(
 type validateImproveSuggestionServiceImpl struct {
 	repository        dao.ImproveSuggestionRepository
 	requestRepository dao.ImproveRequestRepository
-	authClient        auth.Client
+	authClient        apiclients.AuthClient
 }
 
 func (s *validateImproveSuggestionServiceImpl) Validate(ctx context.Context, tokenRaw string, validated bool, id uuid.UUID) error {

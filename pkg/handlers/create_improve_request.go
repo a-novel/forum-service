@@ -40,7 +40,7 @@ func (h *createImproveRequestHandlerImpl) Handle(c *gin.Context) {
 			{services.ErrNotTheCreator, http.StatusUnauthorized},
 			{goframework.ErrInvalidCredentials, http.StatusForbidden},
 			{goframework.ErrInvalidEntity, http.StatusUnprocessableEntity},
-		}, false)
+		}, true)
 		return
 	}
 
