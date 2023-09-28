@@ -77,6 +77,10 @@ func (s *updateImproveSuggestionServiceImpl) Update(ctx context.Context, tokenRa
 		return nil, goerrors.Join(goframework.ErrInvalidEntity, ErrSwitchSource)
 	}
 
+	if suggestion.UserID != token.Token.Payload.ID {
+		return nil, goerrors.Join(goframework.ErrInvalidCredentials, ErrNotTheCreator)
+	}
+
 	suggestion, err = s.repository.Update(ctx, adapters.ImproveSuggestionFormToDAO(form), id, now)
 	if err != nil {
 		return nil, goerrors.Join(ErrUpdateImproveSuggestion, err)
