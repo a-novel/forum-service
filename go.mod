@@ -5,11 +5,11 @@ go 1.21.1
 require (
 	github.com/a-novel/bunovel v1.0.1
 	github.com/a-novel/go-api-clients v1.0.9
-	github.com/a-novel/go-apis v1.0.3
+	github.com/a-novel/go-apis v1.0.4
 	github.com/a-novel/go-framework v1.0.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/google/uuid v1.3.1
-	github.com/rs/zerolog v1.30.0
+	github.com/rs/zerolog v1.31.0
 	github.com/samber/lo v1.38.1
 	github.com/stretchr/testify v1.8.4
 	github.com/uptrace/bun v1.1.16
