@@ -33,9 +33,9 @@ db-test:
 	psql -h localhost -p 5432 -U test agora_forum_test
 
 run:
-	go run ./cmd/api/main.go
+	direnv allow . && source .envrc && go run ./cmd/api/main.go
 
 run-internal:
-	go run ./cmd/api-internal/main.go
+	direnv allow . && source .envrc && go run ./cmd/api-internal/main.go
 
 .PHONY: all test race msan db db-test
