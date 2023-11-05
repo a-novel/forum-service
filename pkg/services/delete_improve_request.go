@@ -4,7 +4,7 @@ import (
 	"context"
 	goerrors "errors"
 	"github.com/a-novel/forum-service/pkg/dao"
-	apiclients "github.com/a-novel/go-api-clients"
+	apiclients "github.com/a-novel/go-apis/clients"
 	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 )

@@ -172,27 +172,27 @@ func (repository *improveRequestRepositoryImpl) Create(ctx context.Context, user
 			Metadata: bunovel.NewMetadata(sourceID, now, nil),
 		}
 
-		exists, err := repository.db.NewSelect().Model(model).WherePK().Exists(ctx)
+		exists, err := tx.NewSelect().Model(model).WherePK().Exists(ctx)
 		if err != nil {
 			return fmt.Errorf("failed to check if improve request exists: %w", err)
 		}
 
 		if !exists {
-			if err := repository.db.NewInsert().Model(model).Scan(ctx); err != nil {
+			if err := tx.NewInsert().Model(model).Scan(ctx); err != nil {
 				return fmt.Errorf("failed to create improve request: %w", err)
 			}
-		}
+		} else {
+			revisionModel := &ImproveRequestRevisionModel{
+				Metadata: bunovel.NewMetadata(id, now, nil),
+				SourceID: sourceID,
+				UserID:   userID,
+				Title:    title,
+				Content:  content,
+			}
 
-		revisionModel := &ImproveRequestRevisionModel{
-			Metadata: bunovel.NewMetadata(id, now, nil),
-			SourceID: sourceID,
-			UserID:   userID,
-			Title:    title,
-			Content:  content,
-		}
-
-		if err := repository.db.NewInsert().Model(revisionModel).Scan(ctx); err != nil {
-			return fmt.Errorf("failed to create improve request revision: %w", err)
+			if err := tx.NewInsert().Model(revisionModel).Scan(ctx); err != nil {
+				return fmt.Errorf("failed to create improve request revision: %w", err)
+			}
 		}
 
 		output.UserID = userID
@@ -220,12 +220,12 @@ func (repository *improveRequestRepositoryImpl) DeleteRevision(ctx context.Conte
 func (repository *improveRequestRepositoryImpl) Delete(ctx context.Context, id uuid.UUID) error {
 	if err := repository.db.RunInTx(ctx, nil, func(ctx context.Context, tx bun.Tx) error {
 		model := &ImproveRequestModel{Metadata: bunovel.Metadata{ID: id}}
-		if _, err := repository.db.NewDelete().Model(model).WherePK().Exec(ctx); err != nil {
+		if _, err := tx.NewDelete().Model(model).WherePK().Exec(ctx); err != nil {
 			return fmt.Errorf("failed to delete improve request: %w", err)
 		}
 
 		revisionModel := new(ImproveRequestRevisionModel)
-		if _, err := repository.db.NewDelete().Model(revisionModel).Where("source_id = ?", id).Exec(ctx); err != nil {
+		if _, err := tx.NewDelete().Model(revisionModel).Where("source_id = ?", id).Exec(ctx); err != nil {
 			return fmt.Errorf("failed to delete improve request revisions: %w", err)
 		}
 

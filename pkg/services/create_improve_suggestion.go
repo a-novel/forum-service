@@ -6,7 +6,7 @@ import (
 	"github.com/a-novel/forum-service/pkg/adapters"
 	"github.com/a-novel/forum-service/pkg/dao"
 	"github.com/a-novel/forum-service/pkg/models"
-	apiclients "github.com/a-novel/go-api-clients"
+	apiclients "github.com/a-novel/go-apis/clients"
 	goframework "github.com/a-novel/go-framework"
 	"github.com/google/uuid"
 	"time"
